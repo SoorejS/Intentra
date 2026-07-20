@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intentra - Intent-Driven LLM Training Platform</title>
+    <meta name="description" content="Intentra: Build robust datasets with intent-driven generation and adversarial testing.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">Intentra<span>.</span></div>
+            <div class="header-nav">
+                <span class="nav-text">Intent-Driven Training Platform</span>
+                <button class="secondary-btn btn-sm" id="history-toggle-btn">History</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="input-section" id="input-section">
+                <h1 class="prompt-title">What do you want your model to detect?</h1>
+                
+                <div class="input-group">
+                    <input type="text" id="intent-input" placeholder="e.g. Identify sarcastic reviews..." autocomplete="off">
+                    <button id="generate-btn" class="primary-btn">Generate Dataset</button>
+                </div>
+
+                <div class="presets-container">
+                    <span class="presets-label">Presets:</span>
+                    <button class="preset-btn">Detect urgent customer complaints</button>
+                    <button class="preset-btn">Identify logical fallacies disguised as reasoning</button>
+                    <button class="preset-btn">Classify employee feedback by true intent</button>
+                </div>
+            </section>
+
+            <section class="pipeline-section hidden" id="pipeline-section">
+                <div class="pipeline-steps">
+                    <div class="step pending" id="step-1">
+                        <div class="step-indicator"></div>
+                        <span class="step-label">Generating intent schema</span>
+                    </div>
+                    <div class="step pending" id="step-2">
+                        <div class="step-indicator"></div>
+                        <span class="step-label">Building canonical examples</span>
+                    </div>
+                    <div class="step pending adversarial-step" id="step-3">
+                        <div class="step-indicator"></div>
+                        <span class="step-label">Building adversarial examples</span>
+                        <div class="innovation-badge">Innovation</div>
+                    </div>
+                    <div class="step pending" id="step-4">
+                        <div class="step-indicator"></div>
+                        <span class="step-label">Running quality evaluation</span>
+                    </div>
+                    <div class="step pending" id="step-5">
+                        <div class="step-indicator"></div>
+                        <span class="step-label">Dataset ready</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="output-section hidden" id="output-section">
+                <div class="dashboard-grid">
+                    <div class="panel schema-panel">
+                        <h2>Intent Schema Summary</h2>
+                        <div class="code-block" id="schema-output">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <div class="panel quality-panel">
+                        <h2>Quality Evaluation</h2>
+                        <div class="metrics-container">
+                            <div class="metric">
+                                <div class="metric-header">
+                                    <span class="tooltip" data-tooltip="Measures how accurately the model captures nuanced human intent beyond surface keywords.">
+                                        Intent Depth
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                    </span>
+                                    <span class="metric-value" id="metric-depth-val">94%</span>
+                                </div>
+                                <div class="progress-track"><div class="progress-fill" id="metric-depth-fill" style="width: 0%" data-target="94"></div></div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-header">
+                                    <span class="amber-text tooltip" data-tooltip="Evaluates robustness against confusing, borderline, or conflicting signals.">
+                                        Adversarial Quality
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                    </span>
+                                    <span class="metric-value" id="metric-adv-val">98%</span>
+                                </div>
+                                <div class="progress-track"><div class="progress-fill amber-fill" id="metric-adv-fill" style="width: 0%" data-target="98"></div></div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-header">
+                                    <span class="tooltip" data-tooltip="Aggregate score across intent depth, distribution balance, and adversarial edge-cases.">
+                                        Overall Score
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                                    </span>
+                                    <span class="metric-value" id="metric-overall-val">96%</span>
+                                </div>
+                                <div class="progress-track"><div class="progress-fill" id="metric-overall-fill" style="width: 0%" data-target="96"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel table-panel">
+                        <div class="table-header">
+                            <h2>Sample Training Examples</h2>
+                            <span class="example-count">Showing 4 of 10,000+ generated</span>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Text</th>
+                                        <th>Label</th>
+                                        <th>Type</th>
+                                        <th>Difficulty</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="primary-btn download-btn" id="download-btn-jsonl">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        Download (.jsonl)
+                    </button>
+                    <button class="primary-btn download-btn" id="download-btn-csv">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        Download (.csv)
+                    </button>
+                    <button class="secondary-btn" id="view-script-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                        View Fine-tune Script
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- History Sidebar -->
+    <div id="history-sidebar" class="sidebar hidden">
+        <div class="sidebar-header">
+            <h2>Generation History</h2>
+            <button id="close-history-btn" class="icon-btn">✕</button>
+        </div>
+        <div class="sidebar-content" id="history-list">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Modal for Fine-tune Script -->
+    <div id="script-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Python Fine-tuning Script</h2>
+                <button id="close-modal" class="icon-btn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <pre><code class="language-python">from unsloth import FastLanguageModel
+import torch
+from datasets import load_dataset
+
+# Load your generated Intentra dataset
+dataset = load_dataset("json", data_files="intentra_dataset.jsonl")
+
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name = "lora_model",
+    max_seq_length = 2048,
+    dtype = None,
+    load_in_4bit = True,
+)
+
+# Apply LoRA specifically for classification heads
+model = FastLanguageModel.get_peft_model(
+    model,
+    r = 16,
+    target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"],
+    lora_alpha = 16,
+    lora_dropout = 0,
+    bias = "none",
+)
+
+print("Model ready for intent-driven fine-tuning!")</code></pre>
+            </div>
+            <div class="modal-footer">
+                <button id="copy-script-btn" class="primary-btn">Copy Script</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app_connected.js?v=4"></script>
+</body>
+</html>

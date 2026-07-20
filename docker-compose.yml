@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  intentra:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./intentra.db:/app/intentra.db
+    restart: unless-stopped

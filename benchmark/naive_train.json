@@ -1,0 +1,366 @@
+[
+    {
+        "text": "All humans are mortal. Socrates is human. Therefore, Socrates is mortal.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Eating carrots improves your eyesight because I read it on the internet.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it rains, the ground gets wet. The ground is wet, so it must have rained.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "No one has ever proven that extraterrestrial life exists, so it must not exist.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "The sun will rise tomorrow because it has risen every day for all human history.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Every person I've met named John has been friendly. Therefore, all people named John are friendly.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "She must be a great teacher because she has a PhD in Education.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "You can't trust his opinion on climate change; he's not a scientist.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All birds can fly. Penguins are birds. Therefore, penguins can fly.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Democracy is the best form of government because it has been the most successful throughout history.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If we don't stop using plastic bags, we will soon destroy the oceans. We must stop using plastic bags immediately to save the oceans.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "You can't trust Mark's opinion on climate change; he's not a scientist.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Everyone knows that eating carrots improves your eyesight, so if you want to see better at night, you should eat more carrots.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Since all swans I have seen are white, it's reasonable to conclude that all swans are white.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Given that all humans are mortal, and I am a human, I must be mortal.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "She's a celebrity, so her opinion on economic policy must be correct.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "No one has ever proved that extraterrestrial life doesn't exist; therefore, aliens must exist.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "I've been studying hard for my exams and maintaining a healthy diet; therefore, I will pass my exams.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "The sun has risen every day for all my life, so it will rise tomorrow.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "He's from a country with a high crime rate, so he must be a criminal.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All birds can fly. Penguins are birds. Therefore, penguins can fly.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet. Therefore, it must have rained.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "There are two sides to every story; thus, every statement must be true.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "To reduce crime, we must increase the number of police officers. Crime rates have dropped after the police department increased its budget.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "John is a good swimmer because he won the swimming competition.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Eating carrots improves your eyesight because my grandmother ate carrots every day and had perfect vision.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Science relies on empirical evidence. Therefore, scientific theories are true.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "A study found that students who study regularly get better grades. Therefore, studying regularly leads to better grades.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "All humans need water to survive. Therefore, drinking water is necessary for human survival.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Everyone knows that eating late at night causes weight gain. Hence, we should avoid eating after 8 PM.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet, so it must have rained. (This is a logical fallacy, known as affirming the consequent.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All humans are mortal. Socrates is human. Therefore, Socrates is mortal. (This is an example of valid reasoning using a syllogism.)",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "If you don't support the proposed tax increase, you must want the city to fail. (This is a false dichotomy fallacy.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "The sun rose today because it's been rising every day of the year. (This is a hasty generalization fallacy.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Every time I wash my car, it rains. Therefore, washing my car causes it to rain. (This is an example of a false cause fallacy.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "A survey found that people who drink coffee are more alert. Therefore, drinking coffee improves alertness. (This assumes causation from correlation without considering other factors.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "No one has ever proven that extraterrestrial life doesn't exist, so it must exist. (This is an appeal to ignorance fallacy.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Alice argues that because she has been a loyal customer for years, she should receive a discount on her new purchase. (This is an argumentum ad hominem fallacy.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "The CEO of the company said that the new policy will benefit the employees, so it must be true. (This is an appeal to authority fallacy.)",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All birds can fly. Penguins are birds. Therefore, penguins can fly.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it rains, the ground gets wet. The ground is wet. Therefore, it must have rained.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Since all humans are mortal, and I am a human, I must be mortal.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Eating vegetables is healthy because they contain essential nutrients.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "I've been driving this car for years without incident, so it's safe.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "John is taller than Peter, and Peter is taller than Mike, so John is taller than Mike.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "She must be a great basketball player because she's tall.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If a plant is not watered, it will die. This plant isn't watered. Therefore, it will die.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Since all roses are flowers and some flowers fade quickly, all roses fade quickly.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "The sun rises every morning because it has done so consistently in the past.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "If it rains, the ground gets wet. The ground is wet, therefore it must have rained.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All men are mortal. Socrates is a man. Therefore, Socrates is mortal.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Eating carrots improves your vision at night because people who eat carrots have good night vision.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Since all roses are flowers, and some flowers fade quickly, some roses may fade quickly.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "You can't trust politicians; my uncle is one and he's dishonest.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If I study, I will pass the exam. I studied, so I will pass the exam.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Everyone is buying this health supplement; it must be effective.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All birds have feathers. A penguin is a bird. Therefore, a penguin has feathers.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Since it's raining, the streets must be wet. I don't see any wet streets.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If a plant is not watered, it dies. The plant died, so it must not have been watered.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "If it's raining, the ground is wet. The ground is wet, so it must be raining.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All dogs have four legs. My pet has four legs. Therefore, my pet is a dog.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Studies show that smoking increases the risk of lung cancer. Therefore, smoking causes lung cancer.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "John is taller than Mark. Mark is taller than Peter. Therefore, John is taller than Peter.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "I have found 20 red marbles in a bag. I conclude that all marbles in the bag are red.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If you don't study, you'll fail the test. Maria didn't study and failed the test.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Every person who has ever drank water has lived. Therefore, drinking water ensures life.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All roses are flowers. This plant is a rose. Therefore, this plant is a flower.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Every time I wash my car, it rains. Therefore, washing my car causes it to rain.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "The sun has risen every day, so it will rise tomorrow.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "All humans are mortal. Socrates is human. Therefore, Socrates is mortal.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "If we allow students to use calculators during tests, they will become lazy at math.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Eating carrots improves your eyesight because my grandmother ate them every day and had perfect vision.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet, so it must have rained.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All birds have feathers. Penguins are birds. Therefore, penguins have feathers.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "No one has ever proven that extraterrestrial life exists, so it must not exist.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "The sun will rise tomorrow because it has every day for the past 10,000 years.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All roses are flowers. Some flowers fade quickly. Therefore, some roses fade quickly.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "People who exercise regularly are healthier. You exercise regularly, so you are healthy.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If a person is a teacher, then they must be patient. Mr. Smith is patient, so he must be a teacher.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it's raining, then the ground will be wet. It's raining. Therefore, the ground is wet.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "Everyone knows that you shouldn't trust politicians, so this politician must be dishonest.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "Since all humans are mortal and Socrates is human, Socrates must be mortal.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "You can't believe John's argument on climate change because he's not a scientist.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "A study with a large sample size and controlled variables is likely to provide accurate results.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "She must be a great teacher because her students always do well on tests.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If a coin is flipped, it must land on either heads or tails.",
+        "label": "Valid Reasoning"
+    },
+    {
+        "text": "We've always done it this way, so it must be the right way to do it.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "The fact that this medicine has been used for thousands of years is proof of its effectiveness.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it's not broken, there's no need to fix it.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "All birds can fly. Penguins are birds. Therefore, penguins can fly.",
+        "label": "Logical Fallacy"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet. Therefore, it has rained.",
+        "label": "Logical Fallacy"
+    }
+]

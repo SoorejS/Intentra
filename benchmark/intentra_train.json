@@ -1,0 +1,502 @@
+[
+    {
+        "text": "If we allow students to use calculators in exams, next they will demand computers, and before you know it, they'll just expect to pass without learning math at all.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "We shouldn't trust the news from that channel because they have been wrong about the weather forecast.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "Everyone knows that the best way to lose weight is to avoid all carbohydrates. It's a proven method.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Drinking water can prevent dehydration because it's necessary for the body to function properly.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "You can't possibly understand the importance of environmental conservation if you've never been affected by a natural disaster.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "You're either with us or against us.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "People who don't support public libraries must not care about education.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "The senator's proposal must be good because it's the one supported by the majority.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "Celebrities have the right to express their opinions freely, just like anyone else.",
+        "label": "Valid Reasoning",
+        "type": "adversarial"
+    },
+    {
+        "text": "She's a good teacher because she's been teaching for over 20 years.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet, so it must have rained.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "All swans are white; I have seen a black swan.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "If I study hard, I will pass the exam. I didn't study hard and I passed the exam.",
+        "label": "Valid Reasoning",
+        "type": "boundary"
+    },
+    {
+        "text": "Everyone buys this brand of smartphone because it is the most popular. Thus, it must be the best.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "You can't possibly understand this argument because you're not a scientist.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Nobody has ever proven that extraterrestrial life doesn't exist, therefore it must exist.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Senator Smith has never been convicted of a crime; thus, she is the most trustworthy politician.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "A survey shows that 90% of people believe in extraterrestrial life, so it must be true.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Either you support the war or you are against our country.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "I don't need to provide evidence for my claim that ghosts exist. After all, I believe them.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "All men are mortal. Socrates is a man. Therefore, Socrates is mortal.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet. Therefore, it must have rained.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "We must take action on climate change, or the planet will be destroyed. Thus, we should ban all cars.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Nobody has ever proven that ghosts don't exist, so they must be real.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "You're either with us, or you're against us.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "No one has ever disproved the existence of the Loch Ness Monster, so it must exist.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "People who don't support the new shopping mall just don't understand the benefits of economic growth.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If we allow students to use calculators, they will eventually forget how to do basic arithmetic.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "We cannot afford to cut education spending, or our children's future will be doomed.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "You're wrong because you're not a scientist.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If we allow students to use calculators in exams, next they will want to bring computers, leading to a decline in mathematical skills.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Nobody has proven that extraterrestrials don't exist, so they must be real.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Since it rained after the match, the team must have won.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Eating carrots improves your eyesight because carrots contain vitamin A.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "You can't possibly understand this complex issue because you're too young.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "All dogs are animals. All cats are animals. Therefore, all dogs are cats.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "I've only ever seen red cars. All cars must be red.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Politicians are not trustworthy, so you shouldn't listen to this one's economic advice.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If we don't cut taxes, our economy will collapse. Cutting taxes is the only way to save our economy.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "She's a good teacher because she has a lot of students.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "All birds can fly. Penguins are birds. Therefore, penguins can fly.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "If we don't reduce our carbon emissions, the Earth will become uninhabitable. Therefore, to ensure human survival, we must reduce carbon emissions.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "Either we stop using cars entirely, or the planet will be destroyed by pollution. Since we can't stop using cars, the planet will be destroyed.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "Every person I've met from Iceland has been tall. Therefore, all Icelanders are tall.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "If we allow students to use calculators in exams, next they'll demand computers. Then they'll want laptops, and soon we'll have to give them smartphones. Next, they'll want to take their phones into the classroom.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "You're either with us, or against us.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "I've never seen a million dollars, but I know it exists because it's been printed on money.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "Socrates is a man, and all men are mortal. Therefore, Socrates is mortal.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "You can't trust this politician. Last election, they lied about their education.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Cats must be smarter than dogs because cats are more independent.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "All birds can fly. Penguins are birds. Therefore, penguins can fly.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "If we don't reduce carbon emissions, global temperatures will rise, leading to climate change. Thus, we must reduce carbon emissions to prevent climate change.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "Either we must ban all cars to reduce pollution, or the environment will continue to degrade.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Most successful people wake up early. Waking up early must be the secret to success.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "No one has ever proven that extraterrestrial life doesn't exist. Therefore, aliens must exist.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "A study found that children who play video games are more aggressive. Video games cause aggression.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "The senator voted for the bill because she is a good person.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "It's raining outside; therefore, the streets will be wet.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "Many people believe in astrology; therefore, it must be true.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Smoking causes lung cancer because numerous studies have shown a link between the two.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet, so it must have rained.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "All swans we have seen are white; therefore, all swans must be white.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Politician X is a good leader because they have a strong following.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "I have always been told that exercise is good for health, so it must be true.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "Since most people believe in ghosts, ghosts must exist.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "John can't be a thief because he donates to charity.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "If we allow students to use calculators, they will become lazy and not learn math.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "90% of people believe in climate change, therefore, it is a fact.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Claiming that vaccines cause autism because one doctor said so.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Because the internet is full of misinformation, everything online must be true.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "All swans are white because I have only seen white swans.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "If we don't reduce greenhouse gas emissions, the planet will become uninhabitable.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "People who support space exploration don't care about Earth's problems.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "You're either with us or against us.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "Scientists agree that climate change is a serious threat.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "Given the success of my last ventures, my new business will surely succeed too.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "She must be a criminal because she dresses that way.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "My opponent argues that we need to invest in renewable energy, but that's just because he's a tree-hugger.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If it's not broken, don't fix it.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "Everyone knows that vaccines cause more harm than good.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "All birds can fly. Penguins are birds. Therefore, penguins can fly.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet. Therefore, it must have rained.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "It's unethical to use animals in experiments. Therefore, all medicines tested on animals are unethical.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Nobody has ever proven that extraterrestrial life doesn't exist. Therefore, extraterrestrial life definitely exists.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "People who eat chocolate are happier. Therefore, eating chocolate causes happiness.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If you're not with us, you're against us. Everyone who doesn't support this policy is against it.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "I'm not a bad person; I'm just misunderstood.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "You can't prove that ghosts don't exist, so they must be real.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Either we cut taxes or our economy will fail. We must cut taxes to prevent economic failure.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "Politician A has been involved in several corruption scandals. Politician B, who supports A, must also be corrupt.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If it rains, the streets get wet. The streets are wet, so it must have rained.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "All swans we have seen are white, so all swans must be white.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "Nobody has ever proven that extraterrestrial life doesn't exist, therefore it must exist.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "Everyone who has ever been to Mars has reported experiencing time dilation, so traveling to Mars will cause time dilation for everyone.",
+        "label": "Logical Fallacy",
+        "type": "boundary"
+    },
+    {
+        "text": "People who don't exercise regularly are unhealthy. Therefore, to be healthy, one must exercise regularly.",
+        "label": "Valid Reasoning",
+        "type": "canonical"
+    },
+    {
+        "text": "Democracy is the worst form of government, except for all the others that have been tried.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If the stock market crashes, my investment will fail. The stock market is volatile, therefore my investment will fail.",
+        "label": "Valid Reasoning",
+        "type": "boundary"
+    },
+    {
+        "text": "All dogs are animals. All cats are animals. Therefore, all dogs are cats.",
+        "label": "Logical Fallacy",
+        "type": "canonical"
+    },
+    {
+        "text": "People who don't support universal healthcare are uncaring.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    },
+    {
+        "text": "If a person commits a crime, they must have had a bad upbringing.",
+        "label": "Logical Fallacy",
+        "type": "adversarial"
+    }
+]
