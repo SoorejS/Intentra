@@ -3,7 +3,7 @@
  * Replace mock data with live API calls to localhost:8000
  */
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "";
 
 // DOM elements
 const objectiveInput = document.getElementById("intent-input");
