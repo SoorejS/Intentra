@@ -442,7 +442,7 @@ async function generateDataset() {
         completeAllSteps();
 
         // Render outputs
-        renderSchema(result.schema);
+        renderSchema(result.schema_data);
         renderExamples(result.dataset);
         renderQuality(result.evaluation);
 
