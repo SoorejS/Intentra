@@ -1213,3 +1213,26 @@ tr:last-child td {
     .input-group { flex-direction: column; }
     .primary-btn { width: 100%; justify-content: center; }
 }
+
+/* ─── Provider Pill ───────────────────────────────────────────── */
+.provider-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: rgba(59,130,246,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(59,130,246,0.25);
+    font-family: var(--font-mono);
+    cursor: default;
+    transition: all 0.3s ease;
+}
+
+.provider-pill.groq      { background: rgba(16,185,129,0.1); color: var(--success); border-color: rgba(16,185,129,0.25); }
+.provider-pill.openrouter{ background: rgba(139,92,246,0.1); color: #A78BFA;         border-color: rgba(139,92,246,0.25); }
+.provider-pill.anthropic { background: rgba(245,158,11,0.1); color: var(--amber);    border-color: rgba(245,158,11,0.25); }
+.provider-pill.local     { background: rgba(100,116,139,0.1); color: #94A3B8;        border-color: rgba(100,116,139,0.25); }
+.provider-pill.none      { background: rgba(239,68,68,0.1);   color: #F87171;        border-color: rgba(239,68,68,0.25); }

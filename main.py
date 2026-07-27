@@ -1,5 +1,6 @@
 """
 Intentra v3 - FastAPI Backend (Enhanced)
+- Multi-provider LLM: Groq, OpenRouter, Anthropic, Local
 - Benchmark proof-point endpoint
 - OpenAI fine-tuning format export
 - Dataset sanity check (dedup + label validation)
@@ -13,6 +14,8 @@ import os
 import sys
 import csv
 import textwrap
+from dotenv import load_dotenv
+load_dotenv()  # Load .env so all provider keys are available
 from io import StringIO
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -66,6 +69,19 @@ class GenerateResponse(BaseModel):
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/api/provider")
+def get_provider():
+    """Return the active LLM provider so the UI can display it."""
+    from core.llm_client import _detect_provider, PROVIDER_MODELS
+    provider = _detect_provider()
+    model = PROVIDER_MODELS.get(provider, "unknown") if provider else None
+    return {
+        "provider": provider or "none",
+        "model": model,
+        "configured": provider is not None
+    }
 
 
 @app.get("/api/benchmark")

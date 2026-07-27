@@ -541,6 +541,26 @@ objectiveInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter") generateDataset();
 });
 
+// ─── Provider status pill ─────────────────────────────────────────────────────
+async function loadProviderStatus() {
+    const pill = document.getElementById("provider-pill");
+    if (!pill) return;
+    try {
+        const res = await fetch(`${API_BASE}/api/provider`);
+        const d = await res.json();
+        const icons = { groq: "⚡", openrouter: "🌐", anthropic: "🤖", local: "💻", none: "⚠️" };
+        const provider = d.provider || "none";
+        pill.textContent = `${icons[provider] || "🔌"} ${provider} · ${d.model || "?"}`;
+        pill.className = `provider-pill ${provider}`;
+        pill.title = d.configured
+            ? `Active provider: ${provider}\nModel: ${d.model}`
+            : "No LLM provider configured. Check your .env file.";
+    } catch(e) {
+        pill.textContent = "⚠️ offline";
+        pill.className = "provider-pill none";
+    }
+}
+
 // Search bar
 document.addEventListener("DOMContentLoaded", () => {
     const searchEl = document.getElementById("table-search");
@@ -557,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tab.addEventListener("click", () => setFilter(tab.dataset.filter));
     });
 
-    // Load benchmark card immediately
+    // Load benchmark card and provider status immediately
     loadBenchmarkCard();
+    loadProviderStatus();
 });
