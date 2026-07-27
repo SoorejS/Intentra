@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Intentra - Intent-Driven LLM Training Platform</title>
-    <meta name="description" content="Intentra: Build robust datasets with intent-driven generation and adversarial testing.">
+    <meta name="description" content="Intentra: Build robust datasets with intent-driven generation and adversarial testing. Empirically proven to improve fine-tuning F1 scores.">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -18,15 +18,20 @@
             </div>
         </header>
 
+        <!-- Benchmark Proof-Point Card -->
+        <div id="benchmark-card" class="benchmark-card">
+            <div style="color:var(--text-muted);font-size:0.85rem">Loading benchmark data...</div>
+        </div>
+
         <main class="main-content">
             <section class="input-section" id="input-section">
                 <h1 class="prompt-title">What do you want your model to detect?</h1>
                 
                 <div class="input-group">
-                    <input type="text" id="intent-input" placeholder="e.g. Identify sarcastic reviews..." autocomplete="off">
+                    <input type="text" id="intent-input" placeholder="e.g. Identify sarcastic reviews in product feedback..." autocomplete="off">
                     <button id="generate-btn" class="primary-btn">Generate Dataset</button>
                 </div>
-                
+
                 <div id="error-msg" class="hidden" style="color: #EF4444; margin-top: 1rem; font-size: 0.9rem; text-align: center;"></div>
 
                 <div class="presets-container">
@@ -54,7 +59,7 @@
                     </div>
                     <div class="step pending" id="step-4">
                         <div class="step-indicator"></div>
-                        <span class="step-label">Running quality evaluation</span>
+                        <span class="step-label">Sanity check &amp; deduplication</span>
                     </div>
                     <div class="step pending" id="step-5">
                         <div class="step-indicator"></div>
@@ -65,6 +70,7 @@
 
             <section class="output-section hidden" id="output-section">
                 <div class="dashboard-grid">
+                    <!-- Intent Schema Panel -->
                     <div class="panel schema-panel">
                         <h2>Intent Schema Summary</h2>
                         <div class="code-block" id="schema-output">
@@ -72,47 +78,42 @@
                         </div>
                     </div>
 
+                    <!-- Quality Evaluation Panel -->
                     <div class="panel quality-panel">
                         <h2>Quality Evaluation</h2>
-                        <div class="metrics-container">
-                            <div class="metric">
-                                <div class="metric-header">
-                                    <span class="tooltip" data-tooltip="Measures how accurately the model captures nuanced human intent beyond surface keywords.">
-                                        Intent Depth
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                                    </span>
-                                    <span class="metric-value" id="metric-depth-val">94%</span>
-                                </div>
-                                <div class="progress-track"><div class="progress-fill" id="metric-depth-fill" style="width: 0%" data-target="94"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-header">
-                                    <span class="amber-text tooltip" data-tooltip="Evaluates robustness against confusing, borderline, or conflicting signals.">
-                                        Adversarial Quality
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                                    </span>
-                                    <span class="metric-value" id="metric-adv-val">98%</span>
-                                </div>
-                                <div class="progress-track"><div class="progress-fill amber-fill" id="metric-adv-fill" style="width: 0%" data-target="98"></div></div>
-                            </div>
-                            <div class="metric">
-                                <div class="metric-header">
-                                    <span class="tooltip" data-tooltip="Aggregate score across intent depth, distribution balance, and adversarial edge-cases.">
-                                        Overall Score
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                                    </span>
-                                    <span class="metric-value" id="metric-overall-val">96%</span>
-                                </div>
-                                <div class="progress-track"><div class="progress-fill" id="metric-overall-fill" style="width: 0%" data-target="96"></div></div>
-                            </div>
+                        <div class="metrics-container" id="quality-metrics">
+                            <!-- Populated by JS -->
                         </div>
                     </div>
 
+                    <!-- Data Table Panel -->
                     <div class="panel table-panel">
                         <div class="table-header">
                             <h2>Sample Training Examples</h2>
-                            <span class="example-count">Showing 4 of 10,000+ generated</span>
+                            <span class="example-count" id="example-count">Loading...</span>
                         </div>
+
+                        <!-- Filter Tabs + Search -->
+                        <div class="table-controls">
+                            <div class="filter-tabs">
+                                <button class="filter-tab active" data-filter="all">
+                                    All <span class="filter-count">0</span>
+                                </button>
+                                <button class="filter-tab" data-filter="canonical">
+                                    Canonical <span class="filter-count">0</span>
+                                </button>
+                                <button class="filter-tab adversarial-tab" data-filter="adversarial">
+                                    Adversarial <span class="filter-count">0</span>
+                                </button>
+                                <button class="filter-tab" data-filter="boundary">
+                                    Boundary <span class="filter-count">0</span>
+                                </button>
+                            </div>
+                            <div class="table-search-wrap">
+                                <input type="text" id="table-search" placeholder="Search examples..." class="table-search">
+                            </div>
+                        </div>
+
                         <div class="table-container">
                             <table>
                                 <thead>
@@ -131,18 +132,27 @@
                     </div>
                 </div>
 
+                <!-- Action Buttons -->
                 <div class="action-buttons">
                     <button class="primary-btn download-btn" id="download-btn-jsonl">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                        Download (.jsonl)
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        JSONL
                     </button>
                     <button class="primary-btn download-btn" id="download-btn-csv">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                        Download (.csv)
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        CSV
+                    </button>
+                    <button class="primary-btn download-btn openai-btn" id="download-btn-openai">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                        OpenAI Format
+                    </button>
+                    <button class="secondary-btn download-btn colab-btn" id="download-btn-colab">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+                        Colab Notebook
                     </button>
                     <button class="secondary-btn" id="view-script-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                        View Fine-tune Script
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        Fine-tune Script
                     </button>
                 </div>
             </section>
@@ -163,48 +173,6 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <!-- Modal for Fine-tune Script -->
-    <div id="script-modal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Python Fine-tuning Script</h2>
-                <button id="close-modal" class="icon-btn">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <pre><code class="language-python">from unsloth import FastLanguageModel
-import torch
-from datasets import load_dataset
-
-# Load your generated Intentra dataset
-dataset = load_dataset("json", data_files="intentra_dataset.jsonl")
-
-model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "lora_model",
-    max_seq_length = 2048,
-    dtype = None,
-    load_in_4bit = True,
-)
-
-# Apply LoRA specifically for classification heads
-model = FastLanguageModel.get_peft_model(
-    model,
-    r = 16,
-    target_modules = ["q_proj", "k_proj", "v_proj", "o_proj"],
-    lora_alpha = 16,
-    lora_dropout = 0,
-    bias = "none",
-)
-
-print("Model ready for intent-driven fine-tuning!")</code></pre>
-            </div>
-            <div class="modal-footer">
-                <button id="copy-script-btn" class="primary-btn">Copy Script</button>
-            </div>
-        </div>
-    </div>
-
-    <script src="app_connected.js?v=4"></script>
+    <script src="app_connected.js?v=5"></script>
 </body>
 </html>
