@@ -2,7 +2,7 @@ import json
 import time
 from core.llm_client import call_llm, extract_json
 
-def generate_full_dataset(schema: dict, dataset_size: int) -> list:
+def generate_full_dataset(schema: dict, dataset_size: int, on_batch_callback=None) -> list:
     prompt = f"""
 Generate a dataset of exactly 10 training examples for this intent classification schema:
 {json.dumps(schema)}
@@ -41,6 +41,12 @@ RULES:
             batch = extract_json(content)
             if isinstance(batch, list):
                 dataset.extend(batch)
+                if callable(on_batch_callback):
+                    try:
+                        on_batch_callback(batch_num + 1, target_batches, batch)
+                    except Exception as cb_err:
+                        print(f"[dataset_generator] Callback error: {cb_err}")
+
             # Small pause between batches to respect rate limits
             if batch_num < target_batches - 1:
                 time.sleep(0.5)

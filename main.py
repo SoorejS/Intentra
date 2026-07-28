@@ -14,13 +14,14 @@ import os
 import sys
 import csv
 import textwrap
+import asyncio
 from dotenv import load_dotenv
 load_dotenv()  # Load .env so all provider keys are available
 from io import StringIO
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import Response
+from fastapi.responses import Response, StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, List
 from sqlalchemy.orm import Session
@@ -31,6 +32,7 @@ from core.intent_schema import generate_intent_schema
 from core.dataset_generator import generate_full_dataset
 from core.evaluator import full_evaluation
 from core.sanity_check import run_sanity_check
+from core.job_manager import job_manager
 from database import engine, get_db
 import models
 
@@ -109,10 +111,136 @@ def get_benchmark():
     }
 
 
-@app.post("/api/generate", response_model=GenerateResponse)
-async def generate_dataset(request: GenerateRequest, db: Session = Depends(get_db)):
-    """Main endpoint: objective in, training dataset out."""
-    
+async def run_async_generation_task(job_id: str, objective: str, dataset_size: int, domain_hint: str):
+    """Background task executing the generation pipeline and emitting SSE progress events."""
+    loop = asyncio.get_running_loop()
+    try:
+        # Step 1: Generate schema
+        await job_manager.emit_event(job_id, "status", {"step": 1, "message": "Generating intent schema...", "progress": 15})
+        schema = generate_intent_schema(objective, domain_hint)
+        await job_manager.emit_event(job_id, "schema", {"schema_data": schema, "progress": 30})
+
+        # Step 2: Generate dataset with batch streaming
+        await job_manager.emit_event(job_id, "status", {"step": 2, "message": "Synthesizing dataset examples...", "progress": 35})
+        
+        def on_batch(batch_num, total_batches, batch_examples):
+            pct = 35 + int((batch_num / total_batches) * 45)
+            asyncio.run_coroutine_threadsafe(
+                job_manager.emit_event(job_id, "batch", {
+                    "batch_index": batch_num,
+                    "total_batches": total_batches,
+                    "examples": batch_examples,
+                    "progress": pct
+                }),
+                loop
+            )
+
+        dataset = generate_full_dataset(schema, dataset_size, on_batch_callback=on_batch)
+
+        # Step 3: Sanity check & deduplication
+        await job_manager.emit_event(job_id, "status", {"step": 3, "message": "Deduplicating and running sanity checks...", "progress": 85})
+        sanity_result = run_sanity_check(dataset, schema)
+        clean_dataset = sanity_result["clean_dataset"]
+        sanity_report = sanity_result["report"]
+        await job_manager.emit_event(job_id, "sanity", {"report": sanity_report, "progress": 90})
+
+        # Step 4: Evaluate quality
+        evaluation = full_evaluation(clean_dataset, schema)
+        evaluation["sanity_report"] = sanity_report
+
+        adversarial_count = sum(1 for ex in clean_dataset if ex.get("type") == "adversarial")
+        summary = {
+            "total_examples": len(clean_dataset),
+            "adversarial_examples": adversarial_count,
+            "canonical_examples": sum(1 for ex in clean_dataset if ex.get("type") == "canonical"),
+            "boundary_examples": sum(1 for ex in clean_dataset if ex.get("type") == "boundary"),
+            "overall_quality_score": evaluation["intent_quality"]["overall_score"],
+            "ready_for_training": evaluation["ready_for_training"],
+            "classes": [c["label"] for c in schema.get("output_classes", [])],
+            "duplicates_removed": sanity_report["duplicates_removed"],
+            "invalid_labels_removed": sanity_report["invalid_labels_removed"]
+        }
+
+        # Step 5: Save to SQLite database
+        db = next(get_db())
+        try:
+            db_generation = models.Generation(
+                objective=objective,
+                domain_hint=domain_hint,
+                schema_json=json.dumps(schema),
+                dataset_json=json.dumps(clean_dataset),
+                evaluation_json=json.dumps(evaluation)
+            )
+            db.add(db_generation)
+            db.commit()
+            db.refresh(db_generation)
+            gen_id = db_generation.id
+        finally:
+            db.close()
+
+        # Emit completion event with full payload
+        await job_manager.emit_event(job_id, "complete", {
+            "id": gen_id,
+            "schema_data": schema,
+            "dataset": clean_dataset,
+            "evaluation": evaluation,
+            "summary": summary
+        })
+
+    except Exception as e:
+        print(f"[main] Async job {job_id} error: {e}")
+        await job_manager.emit_event(job_id, "error", {"detail": str(e)})
+
+
+@app.post("/api/generate")
+async def generate_dataset_async(request: GenerateRequest):
+    """Async endpoint: returns job_id immediately (<50ms), generation runs in background."""
+    if not request.objective or len(request.objective.strip()) < 10:
+        raise HTTPException(status_code=400, detail="Objective must be at least 10 characters")
+
+    if request.dataset_size < 5 or request.dataset_size > 100:
+        raise HTTPException(status_code=400, detail="Dataset size must be between 5 and 100")
+
+    job_id = job_manager.create_job()
+    asyncio.create_task(run_async_generation_task(
+        job_id, request.objective, request.dataset_size, request.domain_hint or ""
+    ))
+
+    return {"job_id": job_id, "status": "processing"}
+
+
+@app.get("/api/jobs/{job_id}/stream")
+async def stream_job_events(job_id: str):
+    """Stream SSE real-time events for a generation job."""
+    return StreamingResponse(
+        job_manager.stream_events(job_id),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
+
+
+@app.get("/api/jobs/{job_id}")
+def get_job_status(job_id: str):
+    """Poll job status and result."""
+    job = job_manager.get_job(job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    return {
+        "id": job["id"],
+        "status": job["status"],
+        "progress": job["progress"],
+        "result": job["result"],
+        "error": job["error"]
+    }
+
+
+@app.post("/api/generate_sync", response_model=GenerateResponse)
+async def generate_dataset_sync(request: GenerateRequest, db: Session = Depends(get_db)):
+    """Synchronous fallback endpoint for backward compatibility."""
     if not request.objective or len(request.objective.strip()) < 10:
         raise HTTPException(status_code=400, detail="Objective must be at least 10 characters")
 
@@ -120,22 +248,15 @@ async def generate_dataset(request: GenerateRequest, db: Session = Depends(get_d
         raise HTTPException(status_code=400, detail="Dataset size must be between 5 and 100")
 
     try:
-        # Step 1: Generate intent schema
         schema = generate_intent_schema(request.objective, request.domain_hint)
-
-        # Step 2: Generate dataset
         dataset = generate_full_dataset(schema, request.dataset_size)
-
-        # Step 3: Sanity check – validate labels + deduplicate
         sanity_result = run_sanity_check(dataset, schema)
         dataset = sanity_result["clean_dataset"]
         sanity_report = sanity_result["report"]
 
-        # Step 4: Evaluate quality
         evaluation = full_evaluation(dataset, schema)
         evaluation["sanity_report"] = sanity_report
 
-        # Step 5: Build summary
         adversarial_count = sum(1 for ex in dataset if ex.get("type") == "adversarial")
         summary = {
             "total_examples": len(dataset),
@@ -149,7 +270,6 @@ async def generate_dataset(request: GenerateRequest, db: Session = Depends(get_d
             "invalid_labels_removed": sanity_report["invalid_labels_removed"]
         }
         
-        # Step 6: Save to database
         db_generation = models.Generation(
             objective=request.objective,
             domain_hint=request.domain_hint,

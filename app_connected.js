@@ -478,13 +478,11 @@ async function generateDataset() {
     lastResult = null;
     fullDataset = [];
 
-    try {
-        activateStep(0);
-        await new Promise(r => setTimeout(r, 800));
-        activateStep(1);
-        await new Promise(r => setTimeout(r, 600));
-        activateStep(2);
+    const pipelineSection = document.getElementById("pipeline-section");
+    if (pipelineSection) pipelineSection.classList.remove("hidden");
+    activateStep(0);
 
+    try {
         const response = await fetch(`${API_BASE}/api/generate`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -496,32 +494,108 @@ async function generateDataset() {
             throw new Error(err.detail || "API error");
         }
 
-        const result = await response.json();
-        lastResult = result;
-        currentGenerationId = result.id;
+        const data = await response.json();
+        const jobId = data.job_id;
 
-        activateStep(3);
-        await new Promise(r => setTimeout(r, 500));
-        activateStep(4);
-        await new Promise(r => setTimeout(r, 400));
-        completeAllSteps();
+        if (!jobId) {
+            // Fallback sync response
+            lastResult = data;
+            currentGenerationId = data.id;
+            completeAllSteps();
+            renderSchema(data.schema_data);
+            renderExamples(data.dataset);
+            renderQuality(data.evaluation);
+            outputPanel.classList.remove("hidden");
+            generateBtn.disabled = false;
+            generateBtn.textContent = "Generate Dataset";
+            return;
+        }
 
-        renderSchema(result.schema_data);
-        renderExamples(result.dataset);
-        renderQuality(result.evaluation);
+        // Connect SSE stream
+        const eventSource = new EventSource(`${API_BASE}/api/jobs/${jobId}/stream`);
 
-        outputPanel.classList.remove("hidden");
-        outputPanel.scrollIntoView({ behavior: "smooth" });
-        showToast(`✓ ${result.dataset?.length || 0} examples generated!`);
+        eventSource.addEventListener("status", (e) => {
+            try {
+                const payload = JSON.parse(e.data);
+                if (payload.step) activateStep(payload.step - 1);
+            } catch(_) {}
+        });
 
-        // Refresh benchmark card
-        loadBenchmarkCard();
+        eventSource.addEventListener("schema", (e) => {
+            try {
+                const payload = JSON.parse(e.data);
+                if (payload.schema_data) {
+                    renderSchema(payload.schema_data);
+                    outputPanel.classList.remove("hidden");
+                    activateStep(1);
+                }
+            } catch(_) {}
+        });
+
+        eventSource.addEventListener("batch", (e) => {
+            try {
+                const payload = JSON.parse(e.data);
+                if (payload.examples && Array.isArray(payload.examples)) {
+                    fullDataset.push(...payload.examples);
+                    renderFilteredTable();
+                    updateExampleCount();
+                    updateFilterCounts();
+                    outputPanel.classList.remove("hidden");
+                    activateStep(2);
+                }
+            } catch(_) {}
+        });
+
+        eventSource.addEventListener("sanity", (e) => {
+            activateStep(3);
+        });
+
+        eventSource.addEventListener("complete", (e) => {
+            eventSource.close();
+            try {
+                const result = JSON.parse(e.data);
+                lastResult = result;
+                currentGenerationId = result.id;
+                if (result.dataset) fullDataset = result.dataset;
+
+                completeAllSteps();
+                renderSchema(result.schema_data);
+                renderExamples(result.dataset);
+                renderQuality(result.evaluation);
+
+                outputPanel.classList.remove("hidden");
+                outputPanel.scrollIntoView({ behavior: "smooth" });
+                showToast(`✓ ${result.dataset?.length || 0} examples generated!`);
+
+                loadBenchmarkCard();
+            } catch(err) {
+                console.error("Error parsing complete payload:", err);
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = "Generate Dataset";
+            }
+        });
+
+        eventSource.addEventListener("error", (e) => {
+            eventSource.close();
+            let errText = "Stream connection failed";
+            try {
+                if (e.data) {
+                    const payload = JSON.parse(e.data);
+                    errText = payload.detail || errText;
+                }
+            } catch(_) {}
+            pipelineSteps.forEach(s => s.classList.remove("active", "completed"));
+            errorMsg.textContent = `Error: ${errText}`;
+            errorMsg.classList.remove("hidden");
+            generateBtn.disabled = false;
+            generateBtn.textContent = "Generate Dataset";
+        });
 
     } catch (err) {
         pipelineSteps.forEach(s => s.classList.remove("active", "completed"));
         errorMsg.textContent = `Error: ${err.message}`;
         errorMsg.classList.remove("hidden");
-    } finally {
         generateBtn.disabled = false;
         generateBtn.textContent = "Generate Dataset";
     }
