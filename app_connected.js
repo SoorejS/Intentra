@@ -80,21 +80,25 @@ function completeAllSteps() {
     });
 }
 
+let currentSchema = null;
+
 // ─── Render intent schema ────────────────────────────────────────────────────
 function renderSchema(schema) {
-    if (!schema) {
+    if (schema) currentSchema = schema;
+    const s = schema || currentSchema || lastResult?.schema_data || lastResult?.schema;
+    if (!s) {
         schemaOutput.innerHTML = `<div style="color:var(--text-muted)">No schema data available.</div>`;
         return;
     }
-    const classes = (schema.output_classes || [])
-        .map(c => `<span class="class-badge">${c.label}</span>`)
+    const classes = (s.output_classes || [])
+        .map(c => `<span class="class-badge">${typeof c === "string" ? c : (c.label || c)}</span>`)
         .join(" ");
 
-    const signals = (schema.pragmatic_signals || [])
+    const signals = (s.pragmatic_signals || [])
         .slice(0, 4)
-        .map(s => {
-            if (typeof s === "string") return `<li>${s}</li>`;
-            return `<li>${s.signal || ""}: <em>${s.description || ""}</em></li>`;
+        .map(sig => {
+            if (typeof sig === "string") return `<li>${sig}</li>`;
+            return `<li>${sig.signal || ""}: <em>${sig.description || ""}</em></li>`;
         })
         .join("");
 
@@ -102,15 +106,11 @@ function renderSchema(schema) {
         <div class="schema-section">
             <div class="schema-row">
                 <span class="schema-label">Task Type</span>
-                <span class="schema-value">${schema.task_type || "Classification"}</span>
-            </div>
-            <div class="schema-row">
-                <span class="schema-label">Deep Task</span>
-                <span class="schema-value">${schema.deep_task || schema.intent_description || "—"}</span>
+                <span class="schema-value">${s.task_type || "Multi-class Intent Classification"}</span>
             </div>
             <div class="schema-row">
                 <span class="schema-label">Output Classes</span>
-                <span class="schema-value">${classes}</span>
+                <span class="schema-value">${classes || "—"}</span>
             </div>
         </div>
         ${signals ? `
@@ -118,10 +118,10 @@ function renderSchema(schema) {
             <div class="schema-label">Pragmatic Signals Identified</div>
             <ul class="signal-list">${signals}</ul>
         </div>` : ""}
-        ${schema.why_existing_tools_fail ? `
+        ${s.why_existing_tools_fail ? `
         <div class="schema-section warning-section">
             <div class="schema-label">Why Existing Tools Fail</div>
-            <div class="schema-value warning-text">${schema.why_existing_tools_fail}</div>
+            <div class="schema-value warning-text">${s.why_existing_tools_fail}</div>
         </div>` : ""}
     `;
 }
@@ -177,7 +177,9 @@ function renderFilteredTable() {
 }
 
 function renderExamples(dataset) {
-    fullDataset = dataset || [];
+    if (Array.isArray(dataset) && dataset.length > 0) {
+        fullDataset = dataset;
+    }
     activeFilter = "all";
     searchQuery = "";
     const searchEl = document.getElementById("table-search");
