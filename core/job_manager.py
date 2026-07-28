@@ -52,11 +52,15 @@ class JobManager:
 
         if event_type == "status":
             job["progress"] = data.get("progress", job["progress"])
+        elif event_type == "schema":
+            job["progress"] = data.get("progress", job["progress"])
+        elif event_type == "batch":
+            job["progress"] = data.get("progress", job["progress"])
         elif event_type == "complete":
             job["status"] = "completed"
             job["progress"] = 100
             job["result"] = data
-        elif event_type == "error":
+        elif event_type in ("error", "job_error"):
             job["status"] = "failed"
             job["error"] = data.get("detail", "Job failed")
 
@@ -88,7 +92,7 @@ class JobManager:
                 try:
                     event = await asyncio.wait_for(queue.get(), timeout=30.0)
                     yield f"event: {event['event']}\ndata: {json.dumps(event['data'])}\n\n"
-                    if event["event"] in ("complete", "error"):
+                    if event["event"] in ("complete", "error", "job_error"):
                         break
                 except asyncio.TimeoutError:
                     # Keep-alive ping

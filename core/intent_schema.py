@@ -18,17 +18,13 @@ Respond with ONLY a valid JSON object matching this structure:
 }}
 """
 
-    try:
-        content = call_llm(prompt, max_tokens=1000, temperature=0.2)
-        return extract_json(content)
-    except Exception as e:
-        print(f"[intent_schema] Error: {e}")
-        return {
-            "task_type": "Multi-class Intent Classification",
-            "output_classes": [
-                {"label": "Positive", "description": "Positive intent"},
-                {"label": "Negative", "description": "Negative intent"}
-            ],
-            "pragmatic_signals": ["Tone", "Context", "Phrasing"],
-            "why_existing_tools_fail": "Unable to generate schema - using fallback."
-        }
+    content = call_llm(prompt, max_tokens=1000, temperature=0.2)
+    schema = extract_json(content)
+
+    # Validate the schema has required fields
+    if not isinstance(schema, dict):
+        raise ValueError(f"Expected dict from LLM, got {type(schema).__name__}")
+    if "output_classes" not in schema or not schema["output_classes"]:
+        raise ValueError("Schema missing 'output_classes'")
+
+    return schema

@@ -12,16 +12,35 @@ Set INTENTRA_PROVIDER=groq|openrouter|anthropic|local to force a specific one.
 
 import os
 import json
-from openai import OpenAI
-from anthropic import Anthropic
+import traceback
 
-# ── Provider default models ──────────────────────────────────────────────────
-PROVIDER_MODELS = {
-    "groq":       os.environ.get("GROQ_MODEL",       "llama-3.1-8b-instant"),
-    "openrouter": os.environ.get("OPENROUTER_MODEL",  "mistralai/mistral-7b-instruct"),
-    "anthropic":  os.environ.get("ANTHROPIC_MODEL",   "claude-3-haiku-20240307"),
-    "local":      os.environ.get("LOCAL_MODEL_NAME",  "local-model"),
+# Known placeholder values that should be treated as "not set"
+_PLACEHOLDERS = {
+    "", "your_groq_api_key_here", "your_openrouter_api_key_here",
+    "your_actual_api_key_here", "your_api_key_here", "sk-xxx",
+    "your_anthropic_api_key_here",
 }
+
+
+def _is_real_key(value: str | None) -> bool:
+    """Return True only if value is a non-empty, non-placeholder string."""
+    if not value:
+        return False
+    return value.strip().lower() not in _PLACEHOLDERS
+
+
+def _get_provider_models() -> dict:
+    """Read model names fresh from env (not cached at import time)."""
+    return {
+        "groq":       os.environ.get("GROQ_MODEL",       "llama-3.1-8b-instant"),
+        "openrouter": os.environ.get("OPENROUTER_MODEL",  "mistralai/mistral-7b-instruct"),
+        "anthropic":  os.environ.get("ANTHROPIC_MODEL",   "claude-3-haiku-20240307"),
+        "local":      os.environ.get("LOCAL_MODEL_NAME",  "local-model"),
+    }
+
+
+# Keep a module-level reference for the /api/provider endpoint
+PROVIDER_MODELS = _get_provider_models()
 
 # ── Provider base URLs ────────────────────────────────────────────────────────
 PROVIDER_BASES = {
@@ -33,19 +52,19 @@ PROVIDER_BASES = {
 def _detect_provider() -> str | None:
     """
     Return the first available provider, respecting INTENTRA_PROVIDER override.
-    Returns None if no provider is configured.
+    Returns None if no provider is configured with a real API key.
     """
     forced = os.environ.get("INTENTRA_PROVIDER", "").lower().strip()
     if forced in ("groq", "openrouter", "anthropic", "local"):
         return forced
 
-    if os.environ.get("GROQ_API_KEY"):
+    if _is_real_key(os.environ.get("GROQ_API_KEY")):
         return "groq"
-    if os.environ.get("OPENROUTER_API_KEY"):
+    if _is_real_key(os.environ.get("OPENROUTER_API_KEY")):
         return "openrouter"
-    if os.environ.get("ANTHROPIC_API_KEY"):
+    if _is_real_key(os.environ.get("ANTHROPIC_API_KEY")):
         return "anthropic"
-    if os.environ.get("LOCAL_API_KEY") and os.environ.get("LOCAL_BASE_URL"):
+    if _is_real_key(os.environ.get("LOCAL_API_KEY")) and os.environ.get("LOCAL_BASE_URL"):
         return "local"
     return None
 
@@ -53,9 +72,10 @@ def _detect_provider() -> str | None:
 def call_llm(prompt: str, max_tokens: int = 2000, temperature: float = 0.7) -> str:
     """
     Call the best available LLM provider and return the text response.
-    Raises RuntimeError if no provider is configured.
+    Raises RuntimeError if no provider is configured or if the API call fails.
     """
     provider = _detect_provider()
+    models = _get_provider_models()
 
     if provider is None:
         raise RuntimeError(
@@ -64,71 +84,83 @@ def call_llm(prompt: str, max_tokens: int = 2000, temperature: float = 0.7) -> s
             "or LOCAL_API_KEY + LOCAL_BASE_URL in your .env file."
         )
 
-    print(f"[Intentra] Using provider: {provider}")
+    print(f"[Intentra LLM] Using provider: {provider}, model: {models.get(provider)}")
 
-    # ── Groq ────────────────────────────────────────────────────────────────
-    if provider == "groq":
-        client = OpenAI(
-            api_key=os.environ["GROQ_API_KEY"],
-            base_url=PROVIDER_BASES["groq"],
-        )
-        resp = client.chat.completions.create(
-            model=PROVIDER_MODELS["groq"],
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-        return resp.choices[0].message.content
+    try:
+        # ── Groq ────────────────────────────────────────────────────────────
+        if provider == "groq":
+            from openai import OpenAI
+            client = OpenAI(
+                api_key=os.environ["GROQ_API_KEY"],
+                base_url=PROVIDER_BASES["groq"],
+            )
+            resp = client.chat.completions.create(
+                model=models["groq"],
+                messages=[{"role": "user", "content": prompt}],
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return resp.choices[0].message.content
 
-    # ── OpenRouter ───────────────────────────────────────────────────────────
-    if provider == "openrouter":
-        client = OpenAI(
-            api_key=os.environ["OPENROUTER_API_KEY"],
-            base_url=PROVIDER_BASES["openrouter"],
-            default_headers={
-                "HTTP-Referer": "https://intentra-jvd1.onrender.com",
-                "X-Title": "Intentra",
-            },
-        )
-        resp = client.chat.completions.create(
-            model=PROVIDER_MODELS["openrouter"],
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-        return resp.choices[0].message.content
+        # ── OpenRouter ──────────────────────────────────────────────────────
+        if provider == "openrouter":
+            from openai import OpenAI
+            client = OpenAI(
+                api_key=os.environ["OPENROUTER_API_KEY"],
+                base_url=PROVIDER_BASES["openrouter"],
+                default_headers={
+                    "HTTP-Referer": "https://intentra-jvd1.onrender.com",
+                    "X-Title": "Intentra",
+                },
+            )
+            resp = client.chat.completions.create(
+                model=models["openrouter"],
+                messages=[{"role": "user", "content": prompt}],
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return resp.choices[0].message.content
 
-    # ── Anthropic ─────────────────────────────────────────────────────────────
-    if provider == "anthropic":
-        client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-        resp = client.messages.create(
-            model=PROVIDER_MODELS["anthropic"],
-            max_tokens=max_tokens,
-            temperature=temperature,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return resp.content[0].text
+        # ── Anthropic ───────────────────────────────────────────────────────
+        if provider == "anthropic":
+            from anthropic import Anthropic
+            client = Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+            resp = client.messages.create(
+                model=models["anthropic"],
+                max_tokens=max_tokens,
+                temperature=temperature,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            return resp.content[0].text
 
-    # ── Local / Ngrok / LM-Studio ─────────────────────────────────────────────
-    if provider == "local":
-        client = OpenAI(
-            api_key=os.environ.get("LOCAL_API_KEY", "lm-studio"),
-            base_url=os.environ["LOCAL_BASE_URL"],
-            timeout=7200.0,
-        )
-        resp = client.chat.completions.create(
-            model=PROVIDER_MODELS["local"],
-            messages=[{"role": "user", "content": prompt}],
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
-        return resp.choices[0].message.content
+        # ── Local / Ngrok / LM-Studio ───────────────────────────────────────
+        if provider == "local":
+            from openai import OpenAI
+            client = OpenAI(
+                api_key=os.environ.get("LOCAL_API_KEY", "lm-studio"),
+                base_url=os.environ["LOCAL_BASE_URL"],
+                timeout=120.0,
+            )
+            resp = client.chat.completions.create(
+                model=models["local"],
+                messages=[{"role": "user", "content": prompt}],
+                temperature=temperature,
+                max_tokens=max_tokens,
+            )
+            return resp.choices[0].message.content
 
-    raise RuntimeError(f"Unknown provider: {provider}")
+        raise RuntimeError(f"Unknown provider: {provider}")
+
+    except Exception as e:
+        print(f"[Intentra LLM] ERROR calling {provider}: {e}")
+        traceback.print_exc()
+        raise RuntimeError(f"LLM call failed ({provider}): {e}") from e
 
 
 def extract_json(content: str):
     """Strip markdown fences and parse JSON from LLM output."""
+    if not content:
+        raise ValueError("Empty LLM response — cannot extract JSON")
     if "```json" in content:
         content = content.split("```json")[1].split("```")[0].strip()
     elif "```" in content:

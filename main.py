@@ -73,12 +73,46 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/api/debug")
+def debug_config():
+    """Debug endpoint - shows provider config and tests connectivity."""
+    from core.llm_client import _detect_provider, _is_real_key, _get_provider_models
+    provider = _detect_provider()
+    models = _get_provider_models()
+    
+    keys_status = {
+        "GROQ_API_KEY": _is_real_key(os.environ.get("GROQ_API_KEY")),
+        "OPENROUTER_API_KEY": _is_real_key(os.environ.get("OPENROUTER_API_KEY")),
+        "ANTHROPIC_API_KEY": _is_real_key(os.environ.get("ANTHROPIC_API_KEY")),
+        "LOCAL_API_KEY": _is_real_key(os.environ.get("LOCAL_API_KEY")),
+        "LOCAL_BASE_URL": bool(os.environ.get("LOCAL_BASE_URL")),
+    }
+    
+    # Quick LLM test
+    test_result = None
+    try:
+        from core.llm_client import call_llm
+        response = call_llm("Reply with exactly: INTENTRA_OK", max_tokens=20, temperature=0.0)
+        test_result = {"success": True, "response": response[:100]}
+    except Exception as e:
+        test_result = {"success": False, "error": str(e)}
+    
+    return {
+        "active_provider": provider,
+        "model": models.get(provider) if provider else None,
+        "keys_configured": keys_status,
+        "llm_test": test_result,
+        "env_loaded": bool(os.environ.get("LOCAL_API_KEY")),
+    }
+
+
 @app.get("/api/provider")
 def get_provider():
     """Return the active LLM provider so the UI can display it."""
-    from core.llm_client import _detect_provider, PROVIDER_MODELS
+    from core.llm_client import _detect_provider, _get_provider_models
     provider = _detect_provider()
-    model = PROVIDER_MODELS.get(provider, "unknown") if provider else None
+    models = _get_provider_models()
+    model = models.get(provider, "unknown") if provider else None
     return {
         "provider": provider or "none",
         "model": model,
@@ -137,6 +171,13 @@ async def run_async_generation_task(job_id: str, objective: str, dataset_size: i
 
         dataset = await asyncio.to_thread(generate_full_dataset, schema, dataset_size, on_batch)
 
+        # VALIDATION: fail the job if we got 0 examples
+        if not dataset or len(dataset) == 0:
+            raise RuntimeError(
+                "Dataset generation produced 0 examples. "
+                "Check that your LLM provider is configured correctly and reachable."
+            )
+
         # Step 3: Sanity check & deduplication
         await job_manager.emit_event(job_id, "status", {"step": 3, "message": "Deduplicating and running sanity checks...", "progress": 85})
         sanity_result = await asyncio.to_thread(run_sanity_check, dataset, schema)
@@ -191,7 +232,9 @@ async def run_async_generation_task(job_id: str, objective: str, dataset_size: i
         })
 
     except Exception as e:
-        print(f"[main] Async job {job_id} error: {e}")
+        import traceback
+        print(f"[main] Async job {job_id} FAILED: {e}")
+        traceback.print_exc()
         await job_manager.emit_event(job_id, "job_error", {"detail": str(e)})
 
 
