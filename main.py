@@ -112,15 +112,15 @@ def get_benchmark():
 
 
 async def run_async_generation_task(job_id: str, objective: str, dataset_size: int, domain_hint: str):
-    """Background task executing the generation pipeline and emitting SSE progress events."""
+    """Background task executing the generation pipeline in worker threads and emitting SSE progress events."""
     loop = asyncio.get_running_loop()
     try:
-        # Step 1: Generate schema
+        # Step 1: Generate schema in thread worker
         await job_manager.emit_event(job_id, "status", {"step": 1, "message": "Generating intent schema...", "progress": 15})
-        schema = generate_intent_schema(objective, domain_hint)
+        schema = await asyncio.to_thread(generate_intent_schema, objective, domain_hint)
         await job_manager.emit_event(job_id, "schema", {"schema_data": schema, "progress": 30})
 
-        # Step 2: Generate dataset with batch streaming
+        # Step 2: Generate dataset with batch streaming in thread worker
         await job_manager.emit_event(job_id, "status", {"step": 2, "message": "Synthesizing dataset examples...", "progress": 35})
         
         def on_batch(batch_num, total_batches, batch_examples):
@@ -135,17 +135,17 @@ async def run_async_generation_task(job_id: str, objective: str, dataset_size: i
                 loop
             )
 
-        dataset = generate_full_dataset(schema, dataset_size, on_batch_callback=on_batch)
+        dataset = await asyncio.to_thread(generate_full_dataset, schema, dataset_size, on_batch)
 
         # Step 3: Sanity check & deduplication
         await job_manager.emit_event(job_id, "status", {"step": 3, "message": "Deduplicating and running sanity checks...", "progress": 85})
-        sanity_result = run_sanity_check(dataset, schema)
+        sanity_result = await asyncio.to_thread(run_sanity_check, dataset, schema)
         clean_dataset = sanity_result["clean_dataset"]
         sanity_report = sanity_result["report"]
         await job_manager.emit_event(job_id, "sanity", {"report": sanity_report, "progress": 90})
 
         # Step 4: Evaluate quality
-        evaluation = full_evaluation(clean_dataset, schema)
+        evaluation = await asyncio.to_thread(full_evaluation, clean_dataset, schema)
         evaluation["sanity_report"] = sanity_report
 
         adversarial_count = sum(1 for ex in clean_dataset if ex.get("type") == "adversarial")
@@ -162,21 +162,24 @@ async def run_async_generation_task(job_id: str, objective: str, dataset_size: i
         }
 
         # Step 5: Save to SQLite database
-        db = next(get_db())
-        try:
-            db_generation = models.Generation(
-                objective=objective,
-                domain_hint=domain_hint,
-                schema_json=json.dumps(schema),
-                dataset_json=json.dumps(clean_dataset),
-                evaluation_json=json.dumps(evaluation)
-            )
-            db.add(db_generation)
-            db.commit()
-            db.refresh(db_generation)
-            gen_id = db_generation.id
-        finally:
-            db.close()
+        def save_to_db():
+            db = next(get_db())
+            try:
+                db_generation = models.Generation(
+                    objective=objective,
+                    domain_hint=domain_hint,
+                    schema_json=json.dumps(schema),
+                    dataset_json=json.dumps(clean_dataset),
+                    evaluation_json=json.dumps(evaluation)
+                )
+                db.add(db_generation)
+                db.commit()
+                db.refresh(db_generation)
+                return db_generation.id
+            finally:
+                db.close()
+
+        gen_id = await asyncio.to_thread(save_to_db)
 
         # Emit completion event with full payload
         await job_manager.emit_event(job_id, "complete", {
@@ -189,7 +192,7 @@ async def run_async_generation_task(job_id: str, objective: str, dataset_size: i
 
     except Exception as e:
         print(f"[main] Async job {job_id} error: {e}")
-        await job_manager.emit_event(job_id, "error", {"detail": str(e)})
+        await job_manager.emit_event(job_id, "job_error", {"detail": str(e)})
 
 
 @app.post("/api/generate")

@@ -467,6 +467,49 @@ print("Model ready for deployment!")`;
 }
 
 // ─── Main generate function ───────────────────────────────────────────────────
+async function startPollingFallback(jobId) {
+    const pollInterval = setInterval(async () => {
+        try {
+            const res = await fetch(`${API_BASE}/api/jobs/${jobId}`);
+            if (!res.ok) return;
+            const job = await res.json();
+
+            if (job.progress) {
+                if (job.progress >= 15) activateStep(0);
+                if (job.progress >= 30) activateStep(1);
+                if (job.progress >= 35) activateStep(2);
+                if (job.progress >= 85) activateStep(3);
+            }
+
+            if (job.status === "completed" && job.result) {
+                clearInterval(pollInterval);
+                const result = job.result;
+                lastResult = result;
+                currentGenerationId = result.id;
+
+                completeAllSteps();
+                renderSchema(result.schema_data);
+                renderExamples(result.dataset);
+                renderQuality(result.evaluation);
+
+                outputPanel.classList.remove("hidden");
+                outputPanel.scrollIntoView({ behavior: "smooth" });
+                showToast(`✓ ${result.dataset?.length || 0} examples generated!`);
+                loadBenchmarkCard();
+                generateBtn.disabled = false;
+                generateBtn.textContent = "Generate Dataset";
+            } else if (job.status === "failed") {
+                clearInterval(pollInterval);
+                pipelineSteps.forEach(s => s.classList.remove("active", "completed"));
+                errorMsg.textContent = `Error: ${job.error || "Job failed"}`;
+                errorMsg.classList.remove("hidden");
+                generateBtn.disabled = false;
+                generateBtn.textContent = "Generate Dataset";
+            }
+        } catch(e) {}
+    }, 1200);
+}
+
 async function generateDataset() {
     const objective = objectiveInput.value.trim();
     if (!objective || objective.length < 10) { shakeInput(); return; }
@@ -511,6 +554,8 @@ async function generateDataset() {
             return;
         }
 
+        let isCompleted = false;
+
         // Connect SSE stream
         const eventSource = new EventSource(`${API_BASE}/api/jobs/${jobId}/stream`);
 
@@ -551,6 +596,7 @@ async function generateDataset() {
         });
 
         eventSource.addEventListener("complete", (e) => {
+            isCompleted = true;
             eventSource.close();
             try {
                 const result = JSON.parse(e.data);
@@ -576,14 +622,13 @@ async function generateDataset() {
             }
         });
 
-        eventSource.addEventListener("error", (e) => {
+        eventSource.addEventListener("job_error", (e) => {
+            isCompleted = true;
             eventSource.close();
-            let errText = "Stream connection failed";
+            let errText = "Job failed";
             try {
-                if (e.data) {
-                    const payload = JSON.parse(e.data);
-                    errText = payload.detail || errText;
-                }
+                const payload = JSON.parse(e.data);
+                errText = payload.detail || errText;
             } catch(_) {}
             pipelineSteps.forEach(s => s.classList.remove("active", "completed"));
             errorMsg.textContent = `Error: ${errText}`;
@@ -591,6 +636,14 @@ async function generateDataset() {
             generateBtn.disabled = false;
             generateBtn.textContent = "Generate Dataset";
         });
+
+        // Fail-safe onerror: if SSE connection drops before completion, switch to polling!
+        eventSource.onerror = (e) => {
+            if (isCompleted) return;
+            eventSource.close();
+            console.warn("SSE stream disconnected. Switching to polling fallback for job:", jobId);
+            startPollingFallback(jobId);
+        };
 
     } catch (err) {
         pipelineSteps.forEach(s => s.classList.remove("active", "completed"));
