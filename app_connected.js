@@ -1,7 +1,8 @@
 /**
  * Intentra v3 Frontend - Connected to Real FastAPI Backend
  * Features: Benchmark card, Filter tabs, Search, OpenAI export, Colab notebook,
- *           Phase A controls (Slider, Language, Refinement, Inline Edit, Themes)
+ *           Phase A (Slider, Language, Refinement, Inline Edit, Themes)
+ *           Phase B (Auth, Workspaces, Analytics, 1,000 Examples Scaling)
  */
 
 const API_BASE = "";
@@ -27,7 +28,7 @@ const historySidebar = document.getElementById("history-sidebar");
 const closeHistoryBtn = document.getElementById("close-history-btn");
 const historyList = document.getElementById("history-list");
 
-// Phase A New DOM Elements
+// Phase A DOM Elements
 const sizeSlider = document.getElementById("dataset-size-slider");
 const sliderVal = document.getElementById("slider-val");
 const languageSelect = document.getElementById("language-select");
@@ -39,6 +40,21 @@ const closeTemplatesBtn = document.getElementById("close-templates-btn");
 const refineInput = document.getElementById("refine-input");
 const refineBtn = document.getElementById("refine-btn");
 
+// Phase B DOM Elements
+const workspaceSelect = document.getElementById("workspace-select");
+const analyticsBtn = document.getElementById("analytics-btn");
+const analyticsModal = document.getElementById("analytics-modal");
+const closeAnalyticsBtn = document.getElementById("close-analytics-btn");
+const analyticsContent = document.getElementById("analytics-content");
+const authBtn = document.getElementById("auth-btn");
+const authModal = document.getElementById("auth-modal");
+const closeAuthBtn = document.getElementById("close-auth-btn");
+const authSubmitBtn = document.getElementById("auth-submit-btn");
+const authToggleMode = document.getElementById("auth-toggle-mode");
+const authModalTitle = document.getElementById("auth-modal-title");
+const authEmailInput = document.getElementById("auth-email");
+const authPasswordInput = document.getElementById("auth-password");
+
 // Store last result for download and filtering
 let lastResult = null;
 let currentGenerationId = null;
@@ -46,6 +62,16 @@ let fullDataset = [];
 let activeFilter = "all";
 let searchQuery = "";
 let currentSchema = null;
+let authMode = "login"; // "login" or "signup"
+let currentUser = null;
+
+// Helper: Get Auth Headers for API calls
+function getAuthHeaders() {
+    const token = localStorage.getItem("intentra_token");
+    const headers = { "Content-Type": "application/json" };
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    return headers;
+}
 
 // ─── Theme Toggle Logic ───────────────────────────────────────────────────────
 function initTheme() {
@@ -65,7 +91,7 @@ if (themeToggleBtn) {
     });
 }
 
-// ─── Slider Live Binding ──────────────────────────────────────────────────────
+// ─── Slider Live Binding (Up to 1,000) ────────────────────────────────────────
 if (sizeSlider && sliderVal) {
     sizeSlider.addEventListener("input", (e) => {
         sliderVal.textContent = e.target.value;
@@ -89,6 +115,164 @@ if (templatesBtn && templatesModal && closeTemplatesBtn) {
                 showToast("Template prompt loaded!");
             }
         });
+    });
+}
+
+// ─── Phase B: Auth Modal & Session Handling ──────────────────────────────────
+async function checkAuthSession() {
+    const token = localStorage.getItem("intentra_token");
+    if (!token) return;
+    try {
+        const res = await fetch(`${API_BASE}/api/auth/me`, { headers: getAuthHeaders() });
+        const d = await res.json();
+        if (d.authenticated && d.user) {
+            currentUser = d.user;
+            if (authBtn) authBtn.textContent = `👤 ${d.user.email.split('@')[0]}`;
+        } else {
+            localStorage.removeItem("intentra_token");
+        }
+    } catch(e) {}
+}
+
+if (authBtn && authModal && closeAuthBtn) {
+    authBtn.addEventListener("click", () => {
+        if (currentUser) {
+            if (confirm(`Logged in as ${currentUser.email}. Log out?`)) {
+                localStorage.removeItem("intentra_token");
+                currentUser = null;
+                authBtn.textContent = "👤 Sign In";
+                showToast("Logged out");
+            }
+        } else {
+            authModal.classList.remove("hidden");
+        }
+    });
+
+    closeAuthBtn.addEventListener("click", () => authModal.classList.add("hidden"));
+    authModal.addEventListener("click", (e) => {
+        if (e.target === authModal) authModal.classList.add("hidden");
+    });
+
+    if (authToggleMode) {
+        authToggleMode.addEventListener("click", (e) => {
+            e.preventDefault();
+            authMode = authMode === "login" ? "signup" : "login";
+            authModalTitle.textContent = authMode === "login" ? "Sign In to Intentra" : "Create Intentra Account";
+            authSubmitBtn.textContent = authMode === "login" ? "Sign In" : "Create Account";
+            authToggleMode.textContent = authMode === "login" ? "Sign Up" : "Sign In";
+        });
+    }
+
+    if (authSubmitBtn) {
+        authSubmitBtn.addEventListener("click", async () => {
+            const email = authEmailInput?.value.trim();
+            const password = authPasswordInput?.value.trim();
+            if (!email || !password) {
+                showToast("Enter email and password", "error");
+                return;
+            }
+            authSubmitBtn.disabled = true;
+            authSubmitBtn.textContent = "Processing...";
+            try {
+                const endpoint = authMode === "login" ? "/api/auth/login" : "/api/auth/signup";
+                const res = await fetch(`${API_BASE}${endpoint}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.detail || "Auth failed");
+                }
+                const data = await res.json();
+                localStorage.setItem("intentra_token", data.token);
+                currentUser = data.user;
+                authBtn.textContent = `👤 ${data.user.email.split('@')[0]}`;
+                authModal.classList.add("hidden");
+                showToast(authMode === "login" ? "Signed in successfully!" : "Account created successfully!");
+                loadWorkspaces();
+            } catch(err) {
+                showToast(err.message, "error");
+            } finally {
+                authSubmitBtn.disabled = false;
+                authSubmitBtn.textContent = authMode === "login" ? "Sign In" : "Create Account";
+            }
+        });
+    }
+}
+
+// ─── Phase B: Workspaces Selector ────────────────────────────────────────────
+async function loadWorkspaces() {
+    if (!workspaceSelect) return;
+    try {
+        const res = await fetch(`${API_BASE}/api/projects`, { headers: getAuthHeaders() });
+        const d = await res.json();
+        workspaceSelect.innerHTML = `<option value="">📂 Default Workspace</option>` +
+            d.projects.map(p => `<option value="${p.id}">📁 ${p.name}</option>`).join("") +
+            `<option value="NEW">+ Create New Workspace...</option>`;
+    } catch(e) {}
+}
+
+if (workspaceSelect) {
+    workspaceSelect.addEventListener("change", async (e) => {
+        if (e.target.value === "NEW") {
+            const name = prompt("Enter new workspace project name:");
+            if (name && name.trim()) {
+                try {
+                    const res = await fetch(`${API_BASE}/api/projects`, {
+                        method: "POST",
+                        headers: getAuthHeaders(),
+                        body: JSON.stringify({ name: name.trim() })
+                    });
+                    if (res.ok) {
+                        showToast(`Workspace "${name.trim()}" created!`);
+                        loadWorkspaces();
+                    }
+                } catch(err) {}
+            }
+            e.target.value = "";
+        }
+    });
+}
+
+// ─── Phase B: Analytics Modal ─────────────────────────────────────────────────
+if (analyticsBtn && analyticsModal && closeAnalyticsBtn) {
+    analyticsBtn.addEventListener("click", async () => {
+        analyticsModal.classList.remove("hidden");
+        try {
+            const res = await fetch(`${API_BASE}/api/analytics`, { headers: getAuthHeaders() });
+            const d = await res.json();
+            analyticsContent.innerHTML = `
+                <div class="analytics-grid">
+                    <div class="stat-card">
+                        <div class="stat-val">${d.total_generations}</div>
+                        <div class="stat-label">Total Generations</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val">${d.total_examples}</div>
+                        <div class="stat-label">Total Examples Created</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val">${d.estimated_tokens.toLocaleString()}</div>
+                        <div class="stat-label">Estimated LLM Tokens</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-val">${d.estimated_cost_usd}</div>
+                        <div class="stat-label">Estimated API Cost (USD)</div>
+                    </div>
+                </div>
+                <div style="margin-top:1.5rem;text-align:center;font-size:0.85rem;color:var(--text-muted)">
+                    Active Session: <strong>${d.active_user}</strong>
+                </div>
+            `;
+        } catch(err) {
+            analyticsContent.innerHTML = `<div style="color:#EF4444">Failed to load analytics</div>`;
+        }
+    });
+
+    closeAnalyticsBtn.addEventListener("click", () => analyticsModal.classList.add("hidden"));
+    analyticsModal.addEventListener("click", (e) => {
+        if (e.target === analyticsModal) analyticsModal.classList.add("hidden");
     });
 }
 
@@ -446,7 +630,7 @@ function downloadColab() {
     showToast("Downloading Colab notebook (.ipynb)");
 }
 
-// ─── Refine Dataset Handler (Phase A) ─────────────────────────────────────────
+// ─── Refine Dataset Handler ───────────────────────────────────────────────────
 if (refineBtn) {
     refineBtn.addEventListener("click", async () => {
         const instruction = refineInput?.value.trim();
@@ -467,7 +651,7 @@ if (refineBtn) {
             const targetLanguage = languageSelect?.value || "English";
             const res = await fetch(`${API_BASE}/api/refine`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     generation_id: currentGenerationId,
                     instruction: instruction,
@@ -504,7 +688,7 @@ function toggleHistorySidebar() {
 
 async function loadHistory() {
     try {
-        const res = await fetch(`${API_BASE}/api/history`);
+        const res = await fetch(`${API_BASE}/api/history`, { headers: getAuthHeaders() });
         const data = await res.json();
         if (!data.history.length) {
             historyList.innerHTML = `<div style="text-align:center;color:var(--text-muted);margin-top:2rem">No generations yet</div>`;
@@ -532,7 +716,7 @@ async function loadGeneration(id) {
         errorMsg.classList.add("hidden");
         completeAllSteps();
 
-        const res = await fetch(`${API_BASE}/api/generation/${id}`);
+        const res = await fetch(`${API_BASE}/api/generation/${id}`, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error("Failed to load generation");
         const result = await res.json();
 
@@ -552,17 +736,18 @@ async function loadGeneration(id) {
     }
 }
 
-// ─── Fine-tune script modal ───────────────────────────────────────────────────
+// ─── Fine-tune script modal (Optimized for 1,000 examples) ───────────────────
 function showFinetuneScript() {
     const classes = lastResult?.summary?.classes || ["class_1", "class_2"];
+    const totalCount = fullDataset.length || 20;
     const script = `from transformers import (
     AutoTokenizer, AutoModelForSequenceClassification,
     TrainingArguments, Trainer
 )
 from datasets import Dataset
-import json
+import json, torch
 
-# Load Intentra-generated dataset
+# Load Intentra-generated dataset (${totalCount} examples)
 with open("intentra_dataset.jsonl") as f:
     data = [json.loads(l) for l in f if l.strip()]
 
@@ -583,29 +768,36 @@ def tokenize(examples):
 dataset = Dataset.from_list(data).map(tokenize, batched=True)
 split = dataset.train_test_split(test_size=0.2)
 
+# Training arguments optimized for up to 1,000 examples
 training_args = TrainingArguments(
     output_dir="./intentra_model",
     num_train_epochs=5,
-    per_device_train_batch_size=8,
+    per_device_train_batch_size=16,
+    gradient_accumulation_steps=2,
+    fp16=torch.cuda.is_available(),
     evaluation_strategy="epoch",
     save_strategy="epoch",
     load_best_model_at_end=True,
+    logging_steps=10
 )
 
-trainer = Trainer(model=model, args=training_args,
-                  train_dataset=split["train"],
-                  eval_dataset=split["test"])
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=split["train"],
+    eval_dataset=split["test"]
+)
 
 trainer.train()
 model.save_pretrained("./intentra_model")
-print("Model ready for deployment!")`;
+print("✓ Intentra model fine-tuned & saved successfully!")`;
 
     const modal = document.createElement("div");
     modal.className = "modal-overlay";
     modal.innerHTML = `
         <div class="modal-box">
             <div class="modal-header">
-                <span>Fine-tune Script</span>
+                <span>Fine-tune Script (${totalCount} Examples Optimization)</span>
                 <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">✕</button>
             </div>
             <pre class="modal-code">${script}</pre>
@@ -679,7 +871,7 @@ async function generateDataset() {
     outputPanel.classList.add("hidden");
     errorMsg.classList.add("hidden");
     generateBtn.disabled = true;
-    generateBtn.textContent = "Generating...";
+    generateBtn.textContent = `Generating (${datasetSize} ex)...`;
     lastResult = null;
     fullDataset = [];
 
@@ -690,7 +882,7 @@ async function generateDataset() {
     try {
         const response = await fetch(`${API_BASE}/api/generate`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: getAuthHeaders(),
             body: JSON.stringify({
                 objective,
                 dataset_size: datasetSize,
@@ -860,6 +1052,8 @@ async function loadProviderStatus() {
 // Search bar & Init
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
+    checkAuthSession();
+    loadWorkspaces();
 
     const searchEl = document.getElementById("table-search");
     if (searchEl) {

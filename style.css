@@ -1424,3 +1424,104 @@ td[contenteditable="true"]:focus {
 }
 .add-class-btn:hover { background: rgba(245, 158, 11, 0.15); }
 
+/* ─── Phase B: Workspace & Auth Styling ───────────────────────── */
+.workspace-select {
+    border-color: rgba(245,158,11,0.3) !important;
+    background: rgba(245,158,11,0.08) !important;
+    color: var(--amber) !important;
+    font-weight: 500;
+}
+
+.auth-box {
+    max-width: 420px !important;
+}
+
+.auth-body {
+    padding: 1.5rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.auth-form label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.auth-input {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    color: var(--text-main);
+    font-size: 0.9rem;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+.auth-submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.auth-switch-text {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.auth-switch-text a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-switch-text a:hover {
+    text-decoration: underline;
+}
+
+/* ─── Phase B: Analytics Modal ────────────────────────────────── */
+.analytics-box {
+    max-width: 580px !important;
+}
+
+.analytics-content {
+    padding: 1.5rem;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.stat-card {
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem;
+    text-align: center;
+}
+
+.stat-val {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--amber);
+    font-family: var(--font-mono);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+}
+
+

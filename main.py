@@ -70,6 +70,22 @@ class RefineRequest(BaseModel):
     target_language: Optional[str] = "English"
 
 
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+    full_name: Optional[str] = ""
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+class ProjectRequest(BaseModel):
+    name: str
+    description: Optional[str] = ""
+
+
 class GenerateResponse(BaseModel):
     id: int
     schema_data: dict
@@ -260,8 +276,8 @@ async def generate_dataset_async(request: GenerateRequest):
     if not request.objective or len(request.objective.strip()) < 10:
         raise HTTPException(status_code=400, detail="Objective must be at least 10 characters")
 
-    if request.dataset_size < 5 or request.dataset_size > 100:
-        raise HTTPException(status_code=400, detail="Dataset size must be between 5 and 100")
+    if request.dataset_size < 5 or request.dataset_size > 1000:
+        raise HTTPException(status_code=400, detail="Dataset size must be between 5 and 1000")
 
     job_id = job_manager.create_job()
     asyncio.create_task(run_async_generation_task(
@@ -618,6 +634,88 @@ def get_example_objectives():
                 "domain_hint": "HR systems, employee engagement, workplace communication"
             }
         ]
+    }
+
+# ─── Auth Endpoints ─────────────────────────────────────────────────────────
+from core.auth import hash_password, verify_password, create_token, decode_token
+from fastapi import Header
+
+def get_current_user_optional(authorization: Optional[str] = Header(None), db: Session = Depends(get_db)):
+    if not authorization:
+        return None
+    token = authorization.replace("Bearer ", "").strip()
+    payload = decode_token(token)
+    if not payload:
+        return None
+    return db.query(models.User).filter(models.User.id == payload["user_id"]).first()
+
+@app.post("/api/auth/signup")
+def signup(req: SignupRequest, db: Session = Depends(get_db)):
+    existing = db.query(models.User).filter(models.User.email == req.email.lower().strip()).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    user = models.User(
+        email=req.email.lower().strip(),
+        hashed_password=hash_password(req.password),
+        full_name=req.full_name or ""
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    token = create_token(user.id, user.email)
+    return {"token": token, "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "is_pro": user.is_pro}}
+
+@app.post("/api/auth/login")
+def login(req: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == req.email.lower().strip()).first()
+    if not user or not verify_password(req.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Invalid email or password")
+    token = create_token(user.id, user.email)
+    return {"token": token, "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "is_pro": user.is_pro}}
+
+@app.get("/api/auth/me")
+def get_me(user = Depends(get_current_user_optional)):
+    if not user:
+        return {"authenticated": False}
+    return {"authenticated": True, "user": {"id": user.id, "email": user.email, "full_name": user.full_name, "is_pro": user.is_pro}}
+
+# ─── Projects Endpoints ──────────────────────────────────────────────────────
+@app.get("/api/projects")
+def get_projects(db: Session = Depends(get_db), user = Depends(get_current_user_optional)):
+    query = db.query(models.Project)
+    if user:
+        query = query.filter((models.Project.user_id == user.id) | (models.Project.user_id == None))
+    projects = query.order_by(models.Project.created_at.desc()).all()
+    return {"projects": [{"id": p.id, "name": p.name, "description": p.description, "created_at": p.created_at.isoformat()} for p in projects]}
+
+@app.post("/api/projects")
+def create_project(req: ProjectRequest, db: Session = Depends(get_db), user = Depends(get_current_user_optional)):
+    if not req.name.strip():
+        raise HTTPException(status_code=400, detail="Project name required")
+    proj = models.Project(name=req.name.strip(), description=req.description or "", user_id=user.id if user else None)
+    db.add(proj)
+    db.commit()
+    db.refresh(proj)
+    return {"id": proj.id, "name": proj.name, "description": proj.description}
+
+# ─── Analytics Endpoint ─────────────────────────────────────────────────────
+@app.get("/api/analytics")
+def get_analytics(db: Session = Depends(get_db), user = Depends(get_current_user_optional)):
+    total_generations = db.query(models.Generation).count()
+    all_gens = db.query(models.Generation).all()
+    total_examples = sum(len(g.dataset) for g in all_gens if g.dataset_json)
+    
+    # Estimate tokens: ~150 tokens per example generated
+    estimated_tokens = total_examples * 150
+    # Groq Llama 3.1 8B cost: ~$0.05 per 1M tokens -> virtually free
+    estimated_cost_usd = round((estimated_tokens / 1_000_000) * 0.05, 4)
+
+    return {
+        "total_generations": total_generations,
+        "total_examples": total_examples,
+        "estimated_tokens": estimated_tokens,
+        "estimated_cost_usd": f"${estimated_cost_usd:.4f}",
+        "active_user": user.email if user else "Guest Developer"
     }
 
 # Mount static files for the frontend

@@ -56,26 +56,34 @@ RULES:
 """
 
     dataset = []
+    # Support up to 1,000 examples (100 batches of 10)
     target_batches = max(1, dataset_size // 10)
 
     for batch_num in range(target_batches):
-        try:
-            print(f"[dataset_generator] Batch {batch_num + 1}/{target_batches}")
-            content = call_llm(prompt, max_tokens=4000, temperature=0.7)
-            batch = extract_json(content)
-            if isinstance(batch, list):
-                dataset.extend(batch)
-                if callable(on_batch_callback):
-                    try:
-                        on_batch_callback(batch_num + 1, target_batches, batch)
-                    except Exception as cb_err:
-                        print(f"[dataset_generator] Callback error: {cb_err}")
+        success = False
+        for attempt in range(3): # Retry up to 3 times per batch for 1,000 example resilience
+            try:
+                print(f"[dataset_generator] Batch {batch_num + 1}/{target_batches} (attempt {attempt + 1})")
+                content = call_llm(prompt, max_tokens=4000, temperature=0.7)
+                batch = extract_json(content)
+                if isinstance(batch, list) and len(batch) > 0:
+                    dataset.extend(batch)
+                    if callable(on_batch_callback):
+                        try:
+                            on_batch_callback(batch_num + 1, target_batches, batch)
+                        except Exception as cb_err:
+                            print(f"[dataset_generator] Callback error: {cb_err}")
+                    success = True
+                    break
+            except Exception as e:
+                print(f"[dataset_generator] Batch {batch_num + 1} attempt {attempt + 1} failed: {e}")
+                time.sleep(1.0)
 
-            # Small pause between batches to respect rate limits
-            if batch_num < target_batches - 1:
-                time.sleep(0.5)
-        except Exception as e:
-            print(f"[dataset_generator] Batch {batch_num + 1} failed: {e}")
-            continue
+        if not success:
+            print(f"[dataset_generator] Warning: Batch {batch_num + 1} skipped after 3 attempts.")
+
+        # Adaptive pause to avoid API rate limits during large runs
+        if batch_num < target_batches - 1:
+            time.sleep(0.3 if target_batches <= 10 else 0.15)
 
     return dataset[:dataset_size]

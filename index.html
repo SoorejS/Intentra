@@ -13,11 +13,18 @@
         <header class="app-header">
             <div class="logo">Intentra<span>.</span></div>
             <div class="header-nav">
-                <span class="nav-text">Intent-Driven Training Platform</span>
                 <span class="provider-pill" id="provider-pill">⚡ Loading...</span>
+                
+                <!-- Workspace Selector -->
+                <select id="workspace-select" class="control-select workspace-select" title="Switch Workspace Project">
+                    <option value="">📂 Default Workspace</option>
+                </select>
+
+                <button class="secondary-btn btn-sm" id="analytics-btn">📊 Analytics</button>
                 <button class="secondary-btn btn-sm" id="theme-toggle-btn" title="Toggle Light/Dark Theme">🌙 Dark</button>
-                <button class="secondary-btn btn-sm" id="templates-btn">📚 Domain Templates</button>
+                <button class="secondary-btn btn-sm" id="templates-btn">📚 Templates</button>
                 <button class="secondary-btn btn-sm" id="history-toggle-btn">History</button>
+                <button class="primary-btn btn-sm auth-btn-header" id="auth-btn">👤 Sign In</button>
             </div>
         </header>
 
@@ -38,8 +45,8 @@
                 <!-- Advanced Options Controls Bar -->
                 <div class="controls-bar">
                     <div class="control-item">
-                        <label for="dataset-size-slider">Dataset Size: <strong id="slider-val">20</strong> examples</label>
-                        <input type="range" id="dataset-size-slider" min="5" max="100" value="20" step="5" class="size-slider">
+                        <label for="dataset-size-slider">Dataset Size: <strong id="slider-val">20</strong> examples (Up to 1,000)</label>
+                        <input type="range" id="dataset-size-slider" min="5" max="1000" value="20" step="10" class="size-slider">
                     </div>
 
                     <div class="control-item">
@@ -165,7 +172,7 @@
 
                         <!-- Refine / Append Dataset Controls -->
                         <div class="refine-container">
-                            <input type="text" id="refine-input" placeholder="e.g. Add 10 more adversarial examples focusing on subtle passive-aggressiveness..." class="refine-input">
+                            <input type="text" id="refine-input" placeholder="e.g. Add 30 more adversarial examples focusing on subtle passive-aggressiveness..." class="refine-input">
                             <button id="refine-btn" class="secondary-btn btn-sm">➕ Add Examples</button>
                         </div>
                     </div>
@@ -235,6 +242,43 @@
         </div>
     </div>
 
+    <!-- Usage Analytics Modal -->
+    <div id="analytics-modal" class="modal-overlay hidden">
+        <div class="modal-box analytics-box">
+            <div class="modal-header">
+                <span>📊 Usage & Cost Analytics</span>
+                <button class="modal-close" id="close-analytics-btn">✕</button>
+            </div>
+            <div class="analytics-content" id="analytics-content">
+                <div style="text-align:center;color:var(--text-muted);padding:2rem">Loading analytics...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Login / Signup Modal -->
+    <div id="auth-modal" class="modal-overlay hidden">
+        <div class="modal-box auth-box">
+            <div class="modal-header">
+                <span id="auth-modal-title">Sign In to Intentra</span>
+                <button class="modal-close" id="close-auth-btn">✕</button>
+            </div>
+            <div class="auth-body">
+                <div class="auth-form">
+                    <label>Email Address</label>
+                    <input type="email" id="auth-email" placeholder="developer@enterprise.com" class="auth-input">
+                    
+                    <label>Password</label>
+                    <input type="password" id="auth-password" placeholder="••••••••" class="auth-input">
+                    
+                    <button class="primary-btn auth-submit-btn" id="auth-submit-btn">Sign In</button>
+                    <div class="auth-switch-text" id="auth-switch-text">
+                        Don't have an account? <a href="#" id="auth-toggle-mode">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- History Sidebar -->
     <div id="history-sidebar" class="sidebar hidden">
         <div class="sidebar-header">
@@ -249,6 +293,6 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="app_connected.js?v=6"></script>
+    <script src="app_connected.js?v=7"></script>
 </body>
 </html>
