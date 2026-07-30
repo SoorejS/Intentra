@@ -1,6 +1,7 @@
 /**
  * Intentra v3 Frontend - Connected to Real FastAPI Backend
- * Features: Benchmark card, Filter tabs, Search, OpenAI export, Colab notebook
+ * Features: Benchmark card, Filter tabs, Search, OpenAI export, Colab notebook,
+ *           Phase A controls (Slider, Language, Refinement, Inline Edit, Themes)
  */
 
 const API_BASE = "";
@@ -26,12 +27,70 @@ const historySidebar = document.getElementById("history-sidebar");
 const closeHistoryBtn = document.getElementById("close-history-btn");
 const historyList = document.getElementById("history-list");
 
+// Phase A New DOM Elements
+const sizeSlider = document.getElementById("dataset-size-slider");
+const sliderVal = document.getElementById("slider-val");
+const languageSelect = document.getElementById("language-select");
+const multilabelToggle = document.getElementById("multilabel-toggle");
+const themeToggleBtn = document.getElementById("theme-toggle-btn");
+const templatesBtn = document.getElementById("templates-btn");
+const templatesModal = document.getElementById("templates-modal");
+const closeTemplatesBtn = document.getElementById("close-templates-btn");
+const refineInput = document.getElementById("refine-input");
+const refineBtn = document.getElementById("refine-btn");
+
 // Store last result for download and filtering
 let lastResult = null;
 let currentGenerationId = null;
 let fullDataset = [];
 let activeFilter = "all";
 let searchQuery = "";
+let currentSchema = null;
+
+// ─── Theme Toggle Logic ───────────────────────────────────────────────────────
+function initTheme() {
+    const savedTheme = localStorage.getItem("intentra_theme") || "dark";
+    if (savedTheme === "light") {
+        document.body.classList.add("light-theme");
+        if (themeToggleBtn) themeToggleBtn.textContent = "☀️ Light";
+    }
+}
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+        document.body.classList.toggle("light-theme");
+        const isLight = document.body.classList.contains("light-theme");
+        themeToggleBtn.textContent = isLight ? "☀️ Light" : "🌙 Dark";
+        localStorage.setItem("intentra_theme", isLight ? "light" : "dark");
+    });
+}
+
+// ─── Slider Live Binding ──────────────────────────────────────────────────────
+if (sizeSlider && sliderVal) {
+    sizeSlider.addEventListener("input", (e) => {
+        sliderVal.textContent = e.target.value;
+    });
+}
+
+// ─── Domain Templates Modal Logic ─────────────────────────────────────────────
+if (templatesBtn && templatesModal && closeTemplatesBtn) {
+    templatesBtn.addEventListener("click", () => templatesModal.classList.remove("hidden"));
+    closeTemplatesBtn.addEventListener("click", () => templatesModal.classList.add("hidden"));
+    templatesModal.addEventListener("click", (e) => {
+        if (e.target === templatesModal) templatesModal.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".template-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const prompt = card.dataset.prompt;
+            if (prompt) {
+                typeText(prompt);
+                templatesModal.classList.add("hidden");
+                showToast("Template prompt loaded!");
+            }
+        });
+    });
+}
 
 // Typing animation for preset buttons
 function typeText(text, callback) {
@@ -44,7 +103,7 @@ function typeText(text, callback) {
             clearInterval(interval);
             if (callback) callback();
         }
-    }, 35);
+    }, 30);
 }
 
 // Preset button handlers
@@ -80,8 +139,6 @@ function completeAllSteps() {
     });
 }
 
-let currentSchema = null;
-
 // ─── Render intent schema ────────────────────────────────────────────────────
 function renderSchema(schema) {
     if (schema) currentSchema = schema;
@@ -90,8 +147,13 @@ function renderSchema(schema) {
         schemaOutput.innerHTML = `<div style="color:var(--text-muted)">No schema data available.</div>`;
         return;
     }
-    const classes = (s.output_classes || [])
-        .map(c => `<span class="class-badge">${typeof c === "string" ? c : (c.label || c)}</span>`)
+
+    const rawClasses = s.output_classes || [];
+    const classesHtml = rawClasses
+        .map((c, idx) => {
+            const labelStr = typeof c === "string" ? c : (c.label || c);
+            return `<span class="class-badge editable" data-idx="${idx}">${labelStr}<span class="badge-remove" onclick="removeClassBadge(${idx})">✕</span></span>`;
+        })
         .join(" ");
 
     const signals = (s.pragmatic_signals || [])
@@ -109,8 +171,12 @@ function renderSchema(schema) {
                 <span class="schema-value">${s.task_type || "Multi-class Intent Classification"}</span>
             </div>
             <div class="schema-row">
+                <span class="schema-label">Target Lang</span>
+                <span class="schema-value">${s.target_language || "English"}</span>
+            </div>
+            <div class="schema-row">
                 <span class="schema-label">Output Classes</span>
-                <span class="schema-value">${classes || "—"}</span>
+                <span class="schema-value">${classesHtml || "—"} <button class="add-class-btn" onclick="addClassBadge()">+ Add Class</button></span>
             </div>
         </div>
         ${signals ? `
@@ -125,6 +191,25 @@ function renderSchema(schema) {
         </div>` : ""}
     `;
 }
+
+// Add Class Badge helper
+window.addClassBadge = function() {
+    const newClass = prompt("Enter new class label name:");
+    if (!newClass || !newClass.trim()) return;
+    if (!currentSchema) currentSchema = { output_classes: [] };
+    if (!currentSchema.output_classes) currentSchema.output_classes = [];
+    currentSchema.output_classes.push({ label: newClass.trim(), description: "User added class" });
+    renderSchema(currentSchema);
+    showToast(`Added class "${newClass.trim()}"`);
+};
+
+// Remove Class Badge helper
+window.removeClassBadge = function(idx) {
+    if (!currentSchema || !currentSchema.output_classes) return;
+    const removed = currentSchema.output_classes.splice(idx, 1);
+    renderSchema(currentSchema);
+    if (removed.length) showToast(`Removed class`);
+};
 
 // ─── Filter + Search helpers ─────────────────────────────────────────────────
 function getFilteredDataset() {
@@ -154,27 +239,43 @@ function updateExampleCount() {
     }
 }
 
+// ─── Render Filtered Table with Inline Cell Editing ─────────────────────────
 function renderFilteredTable() {
     const filtered = getFilteredDataset();
     if (filtered.length === 0) {
         examplesTable.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:2rem">No examples match this filter.</td></tr>`;
         return;
     }
-    examplesTable.innerHTML = filtered.slice(0, 20).map(ex => {
+    examplesTable.innerHTML = filtered.slice(0, 50).map((ex, idx) => {
         const typeClass = ex.type === "adversarial" ? "type-adversarial"
             : ex.type === "boundary" ? "type-boundary" : "type-canonical";
         const naiveNote = ex.type === "adversarial" && ex.naive_label
             ? `<br><small class="naive-label">Naive says: ${ex.naive_label}</small>` : "";
         return `
-            <tr class="${ex.type === "adversarial" ? "row-adversarial" : ""}">
-                <td class="text-cell">${ex.text || "—"}</td>
-                <td><span class="label-badge">${ex.label || "—"}</span>${naiveNote}</td>
+            <tr class="${ex.type === "adversarial" ? "row-adversarial" : ""}" data-global-idx="${fullDataset.indexOf(ex)}">
+                <td class="text-cell" contenteditable="true" onblur="updateDatasetCell(this, 'text')">${ex.text || "—"}</td>
+                <td><span class="label-badge" contenteditable="true" onblur="updateDatasetCell(this, 'label')">${ex.label || "—"}</span>${naiveNote}</td>
                 <td><span class="type-badge ${typeClass}">${ex.type || "—"}</span></td>
                 <td>${ex.difficulty || "moderate"}</td>
             </tr>
         `;
     }).join("");
 }
+
+// Inline Cell Update Handler
+window.updateDatasetCell = function(element, field) {
+    const tr = element.closest("tr");
+    if (!tr) return;
+    const globalIdx = parseInt(tr.dataset.globalIdx);
+    if (isNaN(globalIdx) || !fullDataset[globalIdx]) return;
+
+    const newText = element.textContent.trim();
+    if (fullDataset[globalIdx][field] !== newText) {
+        fullDataset[globalIdx][field] = newText;
+        if (lastResult) lastResult.dataset = fullDataset;
+        showToast(`Updated example ${field}`);
+    }
+};
 
 function renderExamples(dataset) {
     if (Array.isArray(dataset) && dataset.length > 0) {
@@ -217,7 +318,7 @@ function renderQuality(evaluation) {
     const domainVal = q.domain_authenticity_score ?? 9.2;
     const overallVal = q.overall_score ?? Number((depthVal + advVal + domainVal) / 3).toFixed(1);
 
-    const totalEx = s.total_examples ?? (lastResult?.dataset?.length || 20);
+    const totalEx = fullDataset.length || s.total_examples || 20;
     const classCov = s.class_coverage ?? "100%";
     const advRatio = s.adversarial_ratio ?? "30%";
     const isReady = evaluation?.ready_for_training ?? true;
@@ -233,7 +334,7 @@ function renderQuality(evaluation) {
         <div class="sanity-row">
             <span>✅ Sanity check: <strong>${sanity.final_count}</strong> clean examples</span>
             ${sanity.duplicates_removed > 0 ? `<span class="sanity-badge">🗑 ${sanity.duplicates_removed} dups removed</span>` : ""}
-            ${sanity.invalid_labels_removed > 0 ? `<span class="sanity-badge warn">⚠ ${sanity.invalid_labels_removed} invalid labels removed</span>` : ""}
+            ${sanity.invalid_labels_removed > 0 ? `<span class="sanity-badge warn">⚠ ${sanity.invalid_labels_removed} labels normalized</span>` : ""}
         </div>
     ` : "";
 
@@ -343,6 +444,56 @@ function downloadColab() {
     if (!currentGenerationId) return;
     window.location.href = `${API_BASE}/api/export/${currentGenerationId}/notebook`;
     showToast("Downloading Colab notebook (.ipynb)");
+}
+
+// ─── Refine Dataset Handler (Phase A) ─────────────────────────────────────────
+if (refineBtn) {
+    refineBtn.addEventListener("click", async () => {
+        const instruction = refineInput?.value.trim();
+        if (!instruction) {
+            showToast("Enter a refinement instruction first", "error");
+            return;
+        }
+        if (!currentGenerationId) {
+            showToast("Generate a dataset first before refining", "error");
+            return;
+        }
+
+        refineBtn.disabled = true;
+        refineBtn.textContent = "Refining...";
+        showToast("Synthesizing refined examples...");
+
+        try {
+            const targetLanguage = languageSelect?.value || "English";
+            const res = await fetch(`${API_BASE}/api/refine`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    generation_id: currentGenerationId,
+                    instruction: instruction,
+                    additional_count: 10,
+                    target_language: targetLanguage
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.detail || "Refinement failed");
+            }
+
+            const data = await res.json();
+            lastResult = data;
+            renderExamples(data.dataset);
+            renderQuality(data.evaluation);
+            refineInput.value = "";
+            showToast(`✓ Added ${data.new_examples_added} refined examples!`);
+        } catch(err) {
+            showToast(`Error: ${err.message}`, "error");
+        } finally {
+            refineBtn.disabled = false;
+            refineBtn.textContent = "➕ Add Examples";
+        }
+    });
 }
 
 // ─── History sidebar ──────────────────────────────────────────────────────────
@@ -516,6 +667,15 @@ async function generateDataset() {
     const objective = objectiveInput.value.trim();
     if (!objective || objective.length < 10) { shakeInput(); return; }
 
+    const datasetSize = parseInt(sizeSlider?.value || "20");
+    const targetLanguage = languageSelect?.value || "English";
+    const isMultilabel = multilabelToggle?.checked || false;
+
+    // Get any user-edited schema classes
+    const customClasses = currentSchema?.output_classes
+        ? currentSchema.output_classes.map(c => typeof c === "string" ? c : c.label)
+        : null;
+
     outputPanel.classList.add("hidden");
     errorMsg.classList.add("hidden");
     generateBtn.disabled = true;
@@ -531,7 +691,14 @@ async function generateDataset() {
         const response = await fetch(`${API_BASE}/api/generate`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ objective, dataset_size: 20, domain_hint: "" })
+            body: JSON.stringify({
+                objective,
+                dataset_size: datasetSize,
+                domain_hint: "",
+                target_language: targetLanguage,
+                is_multilabel: isMultilabel,
+                custom_classes: customClasses
+            })
         });
 
         if (!response.ok) {
@@ -690,8 +857,10 @@ async function loadProviderStatus() {
     }
 }
 
-// Search bar
+// Search bar & Init
 document.addEventListener("DOMContentLoaded", () => {
+    initTheme();
+
     const searchEl = document.getElementById("table-search");
     if (searchEl) {
         searchEl.addEventListener("input", (e) => {

@@ -58,6 +58,16 @@ class GenerateRequest(BaseModel):
     objective: str
     dataset_size: Optional[int] = 20
     domain_hint: Optional[str] = ""
+    target_language: Optional[str] = "English"
+    is_multilabel: Optional[bool] = False
+    custom_classes: Optional[List[str]] = None
+
+
+class RefineRequest(BaseModel):
+    generation_id: int
+    instruction: str
+    additional_count: Optional[int] = 10
+    target_language: Optional[str] = "English"
 
 
 class GenerateResponse(BaseModel):
@@ -145,17 +155,22 @@ def get_benchmark():
     }
 
 
-async def run_async_generation_task(job_id: str, objective: str, dataset_size: int, domain_hint: str):
+async def run_async_generation_task(job_id: str, objective: str, dataset_size: int, domain_hint: str,
+                                     target_language: str = "English", is_multilabel: bool = False,
+                                     custom_classes: list = None):
     """Background task executing the generation pipeline in worker threads and emitting SSE progress events."""
     loop = asyncio.get_running_loop()
     try:
         # Step 1: Generate schema in thread worker
         await job_manager.emit_event(job_id, "status", {"step": 1, "message": "Generating intent schema...", "progress": 15})
-        schema = await asyncio.to_thread(generate_intent_schema, objective, domain_hint)
+        schema = await asyncio.to_thread(generate_intent_schema, objective, domain_hint,
+                                          target_language=target_language, is_multilabel=is_multilabel,
+                                          custom_classes=custom_classes)
         await job_manager.emit_event(job_id, "schema", {"schema_data": schema, "progress": 30})
 
         # Step 2: Generate dataset with batch streaming in thread worker
-        await job_manager.emit_event(job_id, "status", {"step": 2, "message": "Synthesizing dataset examples...", "progress": 35})
+        lang_note = f" in {target_language}" if target_language != "English" else ""
+        await job_manager.emit_event(job_id, "status", {"step": 2, "message": f"Synthesizing dataset examples{lang_note}...", "progress": 35})
         
         def on_batch(batch_num, total_batches, batch_examples):
             pct = 35 + int((batch_num / total_batches) * 45)
@@ -169,7 +184,8 @@ async def run_async_generation_task(job_id: str, objective: str, dataset_size: i
                 loop
             )
 
-        dataset = await asyncio.to_thread(generate_full_dataset, schema, dataset_size, on_batch)
+        dataset = await asyncio.to_thread(generate_full_dataset, schema, dataset_size, on_batch,
+                                            target_language=target_language, is_multilabel=is_multilabel)
 
         # VALIDATION: fail the job if we got 0 examples
         if not dataset or len(dataset) == 0:
@@ -249,10 +265,52 @@ async def generate_dataset_async(request: GenerateRequest):
 
     job_id = job_manager.create_job()
     asyncio.create_task(run_async_generation_task(
-        job_id, request.objective, request.dataset_size, request.domain_hint or ""
+        job_id, request.objective, request.dataset_size, request.domain_hint or "",
+        target_language=request.target_language or "English",
+        is_multilabel=request.is_multilabel or False,
+        custom_classes=request.custom_classes
     ))
 
     return {"job_id": job_id, "status": "processing"}
+
+
+@app.post("/api/refine")
+async def refine_dataset(request: RefineRequest, db: Session = Depends(get_db)):
+    """Append additional examples to an existing generation based on a refinement instruction."""
+    gen = db.query(models.Generation).filter(models.Generation.id == request.generation_id).first()
+    if not gen:
+        raise HTTPException(status_code=404, detail="Generation not found")
+
+    schema = json.loads(gen.schema_json)
+    existing_dataset = json.loads(gen.dataset_json)
+
+    # Generate additional examples with the refinement instruction baked in
+    from core.dataset_generator import generate_full_dataset
+    new_examples = generate_full_dataset(
+        schema, request.additional_count, None,
+        target_language=request.target_language or "English",
+        refinement_instruction=request.instruction
+    )
+
+    # Merge and re-run sanity check
+    merged = existing_dataset + new_examples
+    sanity_result = run_sanity_check(merged, schema)
+    clean = sanity_result["clean_dataset"]
+    evaluation = full_evaluation(clean, schema)
+    evaluation["sanity_report"] = sanity_result["report"]
+
+    # Update database record
+    gen.dataset_json = json.dumps(clean)
+    gen.evaluation_json = json.dumps(evaluation)
+    db.commit()
+
+    return {
+        "id": gen.id,
+        "new_examples_added": len(new_examples),
+        "total_examples": len(clean),
+        "dataset": clean,
+        "evaluation": evaluation
+    }
 
 
 @app.get("/api/jobs/{job_id}/stream")

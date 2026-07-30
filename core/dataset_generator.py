@@ -2,11 +2,35 @@ import json
 import time
 from core.llm_client import call_llm, extract_json
 
-def generate_full_dataset(schema: dict, dataset_size: int, on_batch_callback=None) -> list:
+def generate_full_dataset(schema: dict, dataset_size: int, on_batch_callback=None, *,
+                           target_language: str = "English",
+                           is_multilabel: bool = False,
+                           refinement_instruction: str = None) -> list:
+
+    language_instruction = ""
+    if target_language and target_language != "English":
+        language_instruction = f"\nIMPORTANT: Generate ALL example text content in {target_language}. Labels should remain in English."
+
+    multilabel_instruction = ""
+    if is_multilabel or schema.get("is_multilabel"):
+        multilabel_instruction = """
+This is a MULTI-LABEL task. Some examples should have multiple applicable labels.
+For multi-label examples, use a comma-separated string for the 'label' field, e.g. "Complaint, Urgent".
+"""
+
+    refinement_note = ""
+    if refinement_instruction:
+        refinement_note = f"""
+REFINEMENT INSTRUCTION: {refinement_instruction}
+Focus on generating examples that match this specific refinement request.
+"""
+
     prompt = f"""
 Generate a dataset of exactly 10 training examples for this intent classification schema:
 {json.dumps(schema)}
-
+{language_instruction}
+{multilabel_instruction}
+{refinement_note}
 Include a balanced mix of:
 - 'canonical': clear, unambiguous examples
 - 'boundary': edge-cases that are genuinely ambiguous
