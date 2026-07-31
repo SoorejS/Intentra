@@ -12,6 +12,7 @@ Set INTENTRA_PROVIDER=groq|openrouter|anthropic|local to force a specific one.
 
 import os
 import json
+import re
 import traceback
 
 # Known placeholder values that should be treated as "not set"
@@ -158,11 +159,44 @@ def call_llm(prompt: str, max_tokens: int = 2000, temperature: float = 0.7) -> s
 
 
 def extract_json(content: str):
-    """Strip markdown fences and parse JSON from LLM output."""
-    if not content:
+    """Strip markdown fences and parse JSON from LLM output with regex fallback."""
+    if not content or not content.strip():
         raise ValueError("Empty LLM response — cannot extract JSON")
+
+    # 1. Backtick codeblocks first
     if "```json" in content:
-        content = content.split("```json")[1].split("```")[0].strip()
+        block = content.split("```json")[1].split("```")[0].strip()
+        try:
+            return json.loads(block)
+        except Exception:
+            pass
     elif "```" in content:
-        content = content.split("```")[1].split("```")[0].strip()
+        block = content.split("```")[1].split("```")[0].strip()
+        try:
+            return json.loads(block)
+        except Exception:
+            pass
+
+    # 2. Try direct JSON load
+    try:
+        return json.loads(content.strip())
+    except Exception:
+        pass
+
+    # 3. Use regex / substring search to extract array [...] or object {...}
+    arr_match = re.search(r"\[\s*\{[\s\S]*\}\s*\]", content)
+    if arr_match:
+        try:
+            return json.loads(arr_match.group(0).strip())
+        except Exception:
+            pass
+
+    start_idx = content.find("{")
+    end_idx = content.rfind("}")
+    if start_idx != -1 and end_idx != -1 and end_idx > start_idx:
+        try:
+            return json.loads(content[start_idx:end_idx+1].strip())
+        except Exception:
+            pass
+
     return json.loads(content.strip())

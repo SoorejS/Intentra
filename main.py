@@ -33,11 +33,12 @@ from core.dataset_generator import generate_full_dataset
 from core.evaluator import full_evaluation
 from core.sanity_check import run_sanity_check
 from core.job_manager import job_manager
-from database import engine, get_db
+from database import engine, get_db, auto_migrate_sqlite
 import models
 
-# Create database tables
+# Create database tables & run auto migrations
 models.Base.metadata.create_all(bind=engine)
+auto_migrate_sqlite()
 
 app = FastAPI(
     title="Intentra API",
