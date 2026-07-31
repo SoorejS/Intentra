@@ -55,6 +55,26 @@ app.add_middleware(
 )
 
 
+async def render_keep_alive_loop():
+    """Background task to self-ping every 10 minutes to prevent Render free-tier sleep."""
+    import urllib.request
+    render_url = os.environ.get("RENDER_EXTERNAL_URL", "https://intentra-jvd1.onrender.com").rstrip("/") + "/api/health"
+    print(f"[Keep-Alive] Self-ping keep-alive service initialized for: {render_url}")
+    while True:
+        await asyncio.sleep(600) # Ping every 10 minutes (600s)
+        try:
+            req = urllib.request.Request(render_url, headers={"User-Agent": "Intentra-KeepAlive/1.0"})
+            with urllib.request.urlopen(req, timeout=15) as response:
+                print(f"[Keep-Alive] Self-ping OK: {response.status}")
+        except Exception as e:
+            print(f"[Keep-Alive] Self-ping ping result: {e}")
+
+
+@app.on_event("startup")
+async def start_keep_alive():
+    asyncio.create_task(render_keep_alive_loop())
+
+
 class GenerateRequest(BaseModel):
     objective: str
     dataset_size: Optional[int] = 20
