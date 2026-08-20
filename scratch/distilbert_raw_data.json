@@ -1,0 +1,352 @@
+{
+  "task": "Customer Support Intent Classification (5 Classes)",
+  "classifier": "DistilBERT (distilbert-base-uncased)",
+  "seeds": [
+    42,
+    123,
+    456,
+    789,
+    999
+  ],
+  "sample_sizes": [
+    50,
+    100,
+    200,
+    300,
+    500,
+    1000
+  ],
+  "holdout_test_set_size": 50,
+  "dedicated_validation_set_size": 25,
+  "data_leakage_detected": false,
+  "by_method": {
+    "naive": {
+      "50": {
+        "mean_macro_f1": 0.3311,
+        "std_macro_f1": 0.0918,
+        "ci95_macro_f1": 0.0804,
+        "mean_accuracy": 0.4,
+        "mean_boundary_accuracy": 0.3952,
+        "mean_hard_negative_accuracy": 0.425,
+        "raw_f1_runs": [
+          0.3253,
+          0.4866,
+          0.2488,
+          0.2309,
+          0.364
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.4925,
+        "std_macro_f1": 0.1749,
+        "ci95_macro_f1": 0.1533,
+        "mean_accuracy": 0.56,
+        "mean_boundary_accuracy": 0.5524,
+        "mean_hard_negative_accuracy": 0.6,
+        "raw_f1_runs": [
+          0.3851,
+          0.7256,
+          0.4962,
+          0.2294,
+          0.626
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.673,
+        "std_macro_f1": 0.0484,
+        "ci95_macro_f1": 0.0425,
+        "mean_accuracy": 0.704,
+        "mean_boundary_accuracy": 0.7,
+        "mean_hard_negative_accuracy": 0.725,
+        "raw_f1_runs": [
+          0.7086,
+          0.7316,
+          0.6675,
+          0.5895,
+          0.6679
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.7236,
+        "std_macro_f1": 0.0916,
+        "ci95_macro_f1": 0.0803,
+        "mean_accuracy": 0.74,
+        "mean_boundary_accuracy": 0.7476,
+        "mean_hard_negative_accuracy": 0.7,
+        "raw_f1_runs": [
+          0.838,
+          0.7731,
+          0.6562,
+          0.5825,
+          0.7683
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.7807,
+        "std_macro_f1": 0.0304,
+        "ci95_macro_f1": 0.0267,
+        "mean_accuracy": 0.788,
+        "mean_boundary_accuracy": 0.7952,
+        "mean_hard_negative_accuracy": 0.75,
+        "raw_f1_runs": [
+          0.7963,
+          0.8157,
+          0.7274,
+          0.7946,
+          0.7695
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.7882,
+        "std_macro_f1": 0.0111,
+        "ci95_macro_f1": 0.0098,
+        "mean_accuracy": 0.792,
+        "mean_boundary_accuracy": 0.8,
+        "mean_hard_negative_accuracy": 0.75,
+        "raw_f1_runs": [
+          0.7782,
+          0.7992,
+          0.7731,
+          0.8012,
+          0.7895
+        ]
+      }
+    },
+    "intentra_v1": {
+      "50": {
+        "mean_macro_f1": 0.328,
+        "std_macro_f1": 0.0854,
+        "ci95_macro_f1": 0.0748,
+        "mean_accuracy": 0.392,
+        "mean_boundary_accuracy": 0.3666,
+        "mean_hard_negative_accuracy": 0.525,
+        "raw_f1_runs": [
+          0.3591,
+          0.4539,
+          0.2518,
+          0.215,
+          0.3603
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.362,
+        "std_macro_f1": 0.1136,
+        "ci95_macro_f1": 0.0996,
+        "mean_accuracy": 0.452,
+        "mean_boundary_accuracy": 0.4381,
+        "mean_hard_negative_accuracy": 0.525,
+        "raw_f1_runs": [
+          0.2713,
+          0.504,
+          0.303,
+          0.2381,
+          0.4937
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.4357,
+        "std_macro_f1": 0.0675,
+        "ci95_macro_f1": 0.0591,
+        "mean_accuracy": 0.488,
+        "mean_boundary_accuracy": 0.4762,
+        "mean_hard_negative_accuracy": 0.55,
+        "raw_f1_runs": [
+          0.5006,
+          0.4813,
+          0.3578,
+          0.3491,
+          0.4896
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.4275,
+        "std_macro_f1": 0.0567,
+        "ci95_macro_f1": 0.0497,
+        "mean_accuracy": 0.488,
+        "mean_boundary_accuracy": 0.4762,
+        "mean_hard_negative_accuracy": 0.55,
+        "raw_f1_runs": [
+          0.4604,
+          0.5114,
+          0.4081,
+          0.3411,
+          0.4164
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.5178,
+        "std_macro_f1": 0.0322,
+        "ci95_macro_f1": 0.0282,
+        "mean_accuracy": 0.552,
+        "mean_boundary_accuracy": 0.5381,
+        "mean_hard_negative_accuracy": 0.625,
+        "raw_f1_runs": [
+          0.4845,
+          0.5579,
+          0.4946,
+          0.4962,
+          0.5559
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.5303,
+        "std_macro_f1": 0.0135,
+        "ci95_macro_f1": 0.0118,
+        "mean_accuracy": 0.556,
+        "mean_boundary_accuracy": 0.5476,
+        "mean_hard_negative_accuracy": 0.6,
+        "raw_f1_runs": [
+          0.5452,
+          0.539,
+          0.508,
+          0.522,
+          0.5372
+        ]
+      }
+    },
+    "intentra_v2": {
+      "50": {
+        "mean_macro_f1": 0.0667,
+        "std_macro_f1": 0.0,
+        "ci95_macro_f1": 0.0,
+        "mean_accuracy": 0.2,
+        "mean_boundary_accuracy": 0.2143,
+        "mean_hard_negative_accuracy": 0.125,
+        "raw_f1_runs": [
+          0.0667,
+          0.0667,
+          0.0667,
+          0.0667,
+          0.0667
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.1297,
+        "std_macro_f1": 0.0441,
+        "ci95_macro_f1": 0.0387,
+        "mean_accuracy": 0.244,
+        "mean_boundary_accuracy": 0.2429,
+        "mean_hard_negative_accuracy": 0.25,
+        "raw_f1_runs": [
+          0.1983,
+          0.1042,
+          0.1527,
+          0.1257,
+          0.0678
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.147,
+        "std_macro_f1": 0.0207,
+        "ci95_macro_f1": 0.0181,
+        "mean_accuracy": 0.256,
+        "mean_boundary_accuracy": 0.2476,
+        "mean_hard_negative_accuracy": 0.3,
+        "raw_f1_runs": [
+          0.1841,
+          0.1286,
+          0.1356,
+          0.155,
+          0.1317
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.2428,
+        "std_macro_f1": 0.0605,
+        "ci95_macro_f1": 0.0531,
+        "mean_accuracy": 0.336,
+        "mean_boundary_accuracy": 0.3428,
+        "mean_hard_negative_accuracy": 0.3,
+        "raw_f1_runs": [
+          0.2297,
+          0.3511,
+          0.1918,
+          0.2583,
+          0.183
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.5089,
+        "std_macro_f1": 0.0645,
+        "ci95_macro_f1": 0.0565,
+        "mean_accuracy": 0.536,
+        "mean_boundary_accuracy": 0.5667,
+        "mean_hard_negative_accuracy": 0.375,
+        "raw_f1_runs": [
+          0.5636,
+          0.6016,
+          0.4586,
+          0.4291,
+          0.4918
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.603,
+        "std_macro_f1": 0.0407,
+        "ci95_macro_f1": 0.0357,
+        "mean_accuracy": 0.616,
+        "mean_boundary_accuracy": 0.6333,
+        "mean_hard_negative_accuracy": 0.525,
+        "raw_f1_runs": [
+          0.5594,
+          0.6737,
+          0.5669,
+          0.612,
+          0.6032
+        ]
+      }
+    }
+  },
+  "generator_quality_audit": {
+    "rejection_counts_by_size": {
+      "100": 27
+    },
+    "observed_confusion_pairs": [],
+    "sample_generated_boundary_examples": [
+      {
+        "text": "Does initiating a cancellation_request automatically prevent any future billing_inquiry? (Case #23)",
+        "label": "cancellation_request",
+        "type": "boundary",
+        "difficulty_rationale": "Programmatic boundary template disambiguating billing_inquiry vs cancellation_request",
+        "generation_reason": "Targeted boundary hardening between 'billing_inquiry' and 'cancellation_request'",
+        "generated_by": "targeted_optimizer_v2"
+      },
+      {
+        "text": "Although I previously inquired about billing_inquiry, I want to confirm my request for cancellation_request. (Case #24)",
+        "label": "cancellation_request",
+        "type": "hard_negative",
+        "difficulty_rationale": "Programmatic hard_negative template disambiguating billing_inquiry vs cancellation_request",
+        "generation_reason": "Targeted boundary hardening between 'billing_inquiry' and 'cancellation_request'",
+        "generated_by": "targeted_optimizer_v2"
+      },
+      {
+        "text": "I don't need a billing_inquiry anymore; just go ahead and finalize the cancellation_request. (Case #25)",
+        "label": "cancellation_request",
+        "type": "hard_negative",
+        "difficulty_rationale": "Programmatic hard_negative template disambiguating billing_inquiry vs cancellation_request",
+        "generation_reason": "Targeted boundary hardening between 'billing_inquiry' and 'cancellation_request'",
+        "generated_by": "targeted_optimizer_v2"
+      },
+      {
+        "text": "Forget the discussion on billing_inquiry, I need cancellation_request immediately. (Case #26)",
+        "label": "cancellation_request",
+        "type": "hard_negative",
+        "difficulty_rationale": "Programmatic hard_negative template disambiguating billing_inquiry vs cancellation_request",
+        "generation_reason": "Targeted boundary hardening between 'billing_inquiry' and 'cancellation_request'",
+        "generated_by": "targeted_optimizer_v2"
+      },
+      {
+        "text": "I need to know the process for billing_inquiry, but please clarify how it impacts my recent cancellation_request. (Case #27)",
+        "label": "billing_inquiry",
+        "type": "boundary",
+        "difficulty_rationale": "Programmatic boundary template disambiguating billing_inquiry vs cancellation_request",
+        "generation_reason": "Targeted boundary hardening between 'billing_inquiry' and 'cancellation_request'",
+        "generated_by": "targeted_optimizer_v2"
+      }
+    ]
+  },
+  "telemetry": {
+    "total_runs": 90,
+    "total_time_seconds": 6886.85
+  }
+}
