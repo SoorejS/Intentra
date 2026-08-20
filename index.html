@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intentra - Intent-Driven LLM Training Platform</title>
-    <meta name="description" content="Intentra: Build robust datasets with intent-driven generation and adversarial testing. Empirically proven to improve fine-tuning F1 scores.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Intentra V2 - Closed-Loop Training Data Optimization Platform</title>
+    <meta name="description" content="Intentra V2: Autonomous Closed-Loop Classifier Data Optimization & Hard-Negative Synthesis Flywheel.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
         <header class="app-header">
-            <div class="logo">Intentra<span>.</span></div>
+            <div class="logo">Intentra<span>.</span> <small style="font-size:0.65rem; background:rgba(245,158,11,0.2); color:var(--amber); padding:2px 8px; border-radius:12px; margin-left:8px; border:1px solid rgba(245,158,11,0.4)">V2 FLYWHEEL</small></div>
             <div class="header-nav">
                 <span class="provider-pill" id="provider-pill">⚡ Loading...</span>
                 
@@ -28,180 +28,371 @@
             </div>
         </header>
 
-        <!-- Benchmark Proof-Point Card -->
+        <!-- Navigation Tabs for V2 Closed-Loop Modules -->
+        <nav class="v2-tab-nav">
+            <button class="v2-tab-btn active" data-tab="studio">⚡ Studio (V1 Generator)</button>
+            <button class="v2-tab-btn" data-tab="train">🧠 Train & Evaluate</button>
+            <button class="v2-tab-btn" data-tab="errors">🔍 Error Analysis & Confusion</button>
+            <button class="v2-tab-btn highlight-tab" data-tab="optimization">🔄 Closed-Loop Flywheel</button>
+            <button class="v2-tab-btn" data-tab="datasets">📦 Dataset Versions</button>
+            <button class="v2-tab-btn" data-tab="benchmarks">📈 Data Efficiency Benchmark</button>
+        </nav>
+
+        <!-- Proof-Point Top Card -->
         <div id="benchmark-card" class="benchmark-card">
             <div style="color:var(--text-muted);font-size:0.85rem">Loading benchmark data...</div>
         </div>
 
         <main class="main-content">
-            <section class="input-section" id="input-section">
-                <h1 class="prompt-title">What do you want your model to detect?</h1>
-                
-                <div class="input-group">
-                    <input type="text" id="intent-input" placeholder="e.g. Identify sarcastic reviews in product feedback..." autocomplete="off">
-                    <button id="generate-btn" class="primary-btn">Generate Dataset</button>
-                </div>
-
-                <!-- Advanced Options Controls Bar -->
-                <div class="controls-bar">
-                    <div class="control-item">
-                        <label for="dataset-size-slider">Dataset Size: <strong id="slider-val">20</strong> examples (Up to 1,000)</label>
-                        <input type="range" id="dataset-size-slider" min="5" max="1000" value="20" step="10" class="size-slider">
+            
+            <!-- TAB 1: STUDIO (Original V1 Generator) -->
+            <div id="tab-studio" class="tab-pane active">
+                <section class="input-section" id="input-section">
+                    <h1 class="prompt-title">What do you want your model to detect?</h1>
+                    
+                    <div class="input-group">
+                        <input type="text" id="intent-input" placeholder="e.g. Identify sarcastic reviews in product feedback..." autocomplete="off">
+                        <button id="generate-btn" class="primary-btn">Generate Dataset</button>
                     </div>
 
-                    <div class="control-item">
-                        <label for="language-select">Target Language</label>
-                        <select id="language-select" class="control-select">
-                            <option value="English">🇬🇧 English</option>
-                            <option value="Spanish">🇪🇸 Spanish (Español)</option>
-                            <option value="French">🇫🇷 French (Français)</option>
-                            <option value="German">🇩🇪 German (Deutsch)</option>
-                            <option value="Hindi">🇮🇳 Hindi (हिन्दी)</option>
-                            <option value="Japanese">🇯🇵 Japanese (日本語)</option>
-                            <option value="Arabic">🇦🇪 Arabic (العربية)</option>
-                            <option value="Portuguese">🇧🇷 Portuguese (Português)</option>
-                        </select>
-                    </div>
+                    <!-- Advanced Options Controls Bar -->
+                    <div class="controls-bar">
+                        <div class="control-item">
+                            <label for="dataset-size-slider">Dataset Size: <strong id="slider-val">20</strong> examples (Up to 1,000)</label>
+                            <input type="range" id="dataset-size-slider" min="5" max="1000" value="20" step="10" class="size-slider">
+                        </div>
 
-                    <div class="control-item checkbox-item">
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="multilabel-toggle">
-                            <span class="slider-round"></span>
-                        </label>
-                        <span class="checkbox-label">Multi-label classification</span>
-                    </div>
-                </div>
+                        <div class="control-item">
+                            <label for="language-select">Target Language</label>
+                            <select id="language-select" class="control-select">
+                                <option value="English">🇬🇧 English</option>
+                                <option value="Spanish">🇪🇸 Spanish (Español)</option>
+                                <option value="French">🇫🇷 French (Français)</option>
+                                <option value="German">🇩🇪 German (Deutsch)</option>
+                                <option value="Hindi">🇮🇳 Hindi (हिन्दी)</option>
+                                <option value="Japanese">🇯🇵 Japanese (日本語)</option>
+                                <option value="Arabic">🇦🇪 Arabic (العربية)</option>
+                                <option value="Portuguese">🇧🇷 Portuguese (Português)</option>
+                            </select>
+                        </div>
 
-                <div id="error-msg" class="hidden" style="color: #EF4444; margin-top: 1rem; font-size: 0.9rem; text-align: center;"></div>
-
-                <div class="presets-container">
-                    <span class="presets-label">Presets:</span>
-                    <button class="preset-btn">Detect urgent customer complaints</button>
-                    <button class="preset-btn">Identify logical fallacies disguised as reasoning</button>
-                    <button class="preset-btn">Classify employee feedback by true intent</button>
-                </div>
-            </section>
-
-            <section class="pipeline-section hidden" id="pipeline-section">
-                <div class="pipeline-steps">
-                    <div class="step pending" id="step-1">
-                        <div class="step-indicator"></div>
-                        <span class="step-label">Generating intent schema</span>
-                    </div>
-                    <div class="step pending" id="step-2">
-                        <div class="step-indicator"></div>
-                        <span class="step-label">Building canonical examples</span>
-                    </div>
-                    <div class="step pending adversarial-step" id="step-3">
-                        <div class="step-indicator"></div>
-                        <span class="step-label">Building adversarial examples</span>
-                        <div class="innovation-badge">Innovation</div>
-                    </div>
-                    <div class="step pending" id="step-4">
-                        <div class="step-indicator"></div>
-                        <span class="step-label">Sanity check &amp; deduplication</span>
-                    </div>
-                    <div class="step pending" id="step-5">
-                        <div class="step-indicator"></div>
-                        <span class="step-label">Dataset ready</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="output-section hidden" id="output-section">
-                <div class="dashboard-grid">
-                    <!-- Intent Schema Panel -->
-                    <div class="panel schema-panel">
-                        <h2>Intent Schema Summary</h2>
-                        <div class="code-block" id="schema-output">
-                            <!-- Populated by JS -->
+                        <div class="control-item checkbox-item">
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="multilabel-toggle">
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="checkbox-label">Multi-label classification</span>
                         </div>
                     </div>
 
-                    <!-- Quality Evaluation Panel -->
-                    <div class="panel quality-panel">
-                        <h2>Quality Evaluation</h2>
-                        <div class="metrics-container" id="quality-metrics">
-                            <!-- Populated by JS -->
+                    <div id="error-msg" class="hidden" style="color: #EF4444; margin-top: 1rem; font-size: 0.9rem; text-align: center;"></div>
+
+                    <div class="presets-container">
+                        <span class="presets-label">Presets:</span>
+                        <button class="preset-btn" data-preset="Detect urgent customer complaints that need immediate escalation">Detect urgent customer complaints</button>
+                        <button class="preset-btn" data-preset="Identify logical fallacies disguised as valid reasoning in debate text">Identify logical fallacies disguised as reasoning</button>
+                        <button class="preset-btn" data-preset="Classify employee feedback by true underlying intent vs polite phrasing">Classify employee feedback by true intent</button>
+                    </div>
+                </section>
+
+                <!-- Pipeline Streaming & Results Section -->
+                <section class="pipeline-section hidden" id="pipeline-section">
+                    <div class="pipeline-steps">
+                        <div class="step-item" id="step-1">
+                            <div class="step-status"></div>
+                            <div class="step-info">
+                                <div class="step-title">Generating intent schema</div>
+                                <div class="step-desc">Target language, pragmatic signals, edge cases</div>
+                            </div>
+                        </div>
+                        <div class="step-item" id="step-2">
+                            <div class="step-status"></div>
+                            <div class="step-info">
+                                <div class="step-title">Building canonical examples</div>
+                                <div class="step-desc">Clear baseline classifications</div>
+                            </div>
+                        </div>
+                        <div class="step-item" id="step-3">
+                            <div class="step-status"></div>
+                            <div class="step-info">
+                                <div class="step-title">Building adversarial examples</div>
+                                <div class="step-desc">Sarcasm, negation, ambiguity, tricky edge cases</div>
+                            </div>
+                        </div>
+                        <div class="step-item" id="step-4">
+                            <div class="step-status"></div>
+                            <div class="step-info">
+                                <div class="step-title">Sanity check & deduplication</div>
+                                <div class="step-desc">Label validation and semantic similarity filters</div>
+                            </div>
+                        </div>
+                        <div class="step-item" id="step-5">
+                            <div class="step-status"></div>
+                            <div class="step-info">
+                                <div class="step-title">Dataset ready</div>
+                                <div class="step-desc">Export formatted for direct model fine-tuning</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-section hidden" id="dashboard-section">
+                    <div class="dashboard-grid">
+                        <!-- Schema Summary Panel -->
+                        <div class="panel schema-panel">
+                            <div class="panel-header">
+                                <h2>Intent Schema Summary</h2>
+                                <span class="badge" id="task-type-badge">Multi-Class</span>
+                            </div>
+                            <div class="panel-content" id="schema-content">
+                                <div class="loading-placeholder">Waiting for schema generation...</div>
+                            </div>
+                        </div>
+
+                        <!-- Quality Evaluation Panel -->
+                        <div class="panel evaluation-panel">
+                            <div class="panel-header">
+                                <h2>Quality Evaluation</h2>
+                                <div class="status-indicator ready" id="status-indicator">
+                                    <span class="dot"></span>
+                                    <span id="status-text">VALIDATING</span>
+                                </div>
+                            </div>
+                            <div class="panel-content" id="evaluation-content">
+                                <div class="loading-placeholder">Waiting for evaluation metrics...</div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Data Table Panel -->
+                    <!-- Dataset Table -->
                     <div class="panel table-panel">
-                        <div class="table-header">
-                            <h2>Sample Training Examples <small class="edit-hint">✏️ Double-click cells to edit text or labels</small></h2>
-                            <span class="example-count" id="example-count">Loading...</span>
-                        </div>
-
-                        <!-- Filter Tabs + Search -->
-                        <div class="table-controls">
-                            <div class="filter-tabs">
-                                <button class="filter-tab active" data-filter="all">
-                                    All <span class="filter-count">0</span>
-                                </button>
-                                <button class="filter-tab" data-filter="canonical">
-                                    Canonical <span class="filter-count">0</span>
-                                </button>
-                                <button class="filter-tab adversarial-tab" data-filter="adversarial">
-                                    Adversarial <span class="filter-count">0</span>
-                                </button>
-                                <button class="filter-tab" data-filter="boundary">
-                                    Boundary <span class="filter-count">0</span>
-                                </button>
+                        <div class="panel-header table-header-flex">
+                            <div>
+                                <h2>Sample Training Examples</h2>
+                                <span class="table-subtitle" id="table-subtitle">Showing 0 of 0 examples</span>
                             </div>
-                            <div class="table-search-wrap">
-                                <input type="text" id="table-search" placeholder="Search examples..." class="table-search">
+                            
+                            <div class="table-controls">
+                                <div class="filter-group">
+                                    <button class="filter-btn active" data-filter="all">All</button>
+                                    <button class="filter-btn" data-filter="canonical">Canonical</button>
+                                    <button class="filter-btn" data-filter="boundary">Boundary</button>
+                                    <button class="filter-btn" data-filter="adversarial">Adversarial</button>
+                                </div>
+                                <div class="table-search-wrap">
+                                    <input type="text" id="table-search" placeholder="Search examples..." class="table-search">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="table-container">
-                            <table>
+                        <!-- Refine / Append Input Bar -->
+                        <div class="refine-bar">
+                            <input type="text" id="refine-input" placeholder="Refine dataset: e.g. Add 20 more subtle boundary cases..." class="refine-input">
+                            <input type="number" id="refine-count" value="10" min="5" max="100" class="refine-count" title="Number of examples to append">
+                            <button id="refine-btn" class="secondary-btn refine-btn">➕ Append Examples</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="dataset-table" id="dataset-table">
                                 <thead>
                                     <tr>
-                                        <th>Text</th>
-                                        <th>Label</th>
-                                        <th>Type</th>
-                                        <th>Difficulty</th>
+                                        <th style="width: 8%">Type</th>
+                                        <th style="width: 52%">Text Statement (Double-click to edit)</th>
+                                        <th style="width: 15%">Label</th>
+                                        <th style="width: 25%">Intent Signal / Reason</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-body">
+                                <tbody id="dataset-table-body">
                                     <!-- Populated by JS -->
                                 </tbody>
                             </table>
                         </div>
+                    </div>
 
-                        <!-- Refine / Append Dataset Controls -->
-                        <div class="refine-container">
-                            <input type="text" id="refine-input" placeholder="e.g. Add 30 more adversarial examples focusing on subtle passive-aggressiveness..." class="refine-input">
-                            <button id="refine-btn" class="secondary-btn btn-sm">➕ Add Examples</button>
+                    <!-- Export Actions Bar -->
+                    <div class="action-buttons">
+                        <button class="secondary-btn" id="export-jsonl-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export JSONL
+                        </button>
+                        <button class="secondary-btn" id="export-csv-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Export CSV
+                        </button>
+                        <button class="secondary-btn" id="export-openai-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+                            OpenAI JSONL
+                        </button>
+                        <button class="secondary-btn" id="colab-notebook-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Open in Colab
+                        </button>
+                        <button class="primary-btn" id="finetune-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            Train in Intentra V2
+                        </button>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB 2: TRAIN & EVALUATE -->
+            <div id="tab-train" class="tab-pane">
+                <div class="v2-card-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>🧠 Classifier Training Launcher</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div class="form-group">
+                                <label>Model Architecture</label>
+                                <select id="train-model-select" class="control-select" style="width:100%">
+                                    <option value="sklearn_fast">⚡ TF-IDF + Logistic Regression (Sub-Second Fast Mode)</option>
+                                    <option value="distilbert-base-uncased">🤖 DistilBERT (distilbert-base-uncased)</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-top:1rem">
+                                <label>Deterministic Random Seed</label>
+                                <input type="number" id="train-seed-input" value="42" class="control-select" style="width:100%">
+                            </div>
+                            <button id="start-train-btn" class="primary-btn" style="width:100%; margin-top:1.5rem; justify-content:center">
+                                🚀 Train Classifier on Current Dataset
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>📊 Evaluation & Performance Metrics</h2>
+                        </div>
+                        <div class="panel-content" id="eval-metrics-display">
+                            <div style="color:var(--text-muted); text-align:center; padding:2rem">
+                                No active evaluation yet. Train a model or click Evaluate.
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <button class="primary-btn download-btn" id="download-btn-jsonl">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                        JSONL
-                    </button>
-                    <button class="primary-btn download-btn" id="download-btn-csv">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                        CSV
-                    </button>
-                    <button class="primary-btn download-btn openai-btn" id="download-btn-openai">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
-                        OpenAI Format
-                    </button>
-                    <button class="secondary-btn download-btn colab-btn" id="download-btn-colab">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
-                        Colab Notebook
-                    </button>
-                    <button class="secondary-btn" id="view-script-btn">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                        Fine-tune Script
-                    </button>
+            <!-- TAB 3: ERROR ANALYSIS & CONFUSION MATRIX -->
+            <div id="tab-errors" class="tab-pane">
+                <div class="panel" style="margin-bottom:2rem">
+                    <div class="panel-header">
+                        <h2>🔍 Decision Boundary Error Diagnosis</h2>
+                        <button id="refresh-errors-btn" class="secondary-btn btn-sm">🔄 Refresh Analysis</button>
+                    </div>
+                    <div class="panel-content" id="error-diagnosis-summary">
+                        <div style="color:var(--text-muted); padding:1rem">Run evaluation to analyze weak classes and confused pairs.</div>
+                    </div>
                 </div>
-            </section>
+
+                <div class="v2-card-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>🔥 Confusion Matrix Heatmap</h2>
+                        </div>
+                        <div class="panel-content" id="confusion-matrix-container" style="overflow-x:auto">
+                            <div style="color:var(--text-muted); padding:2rem; text-align:center">Waiting for evaluation data...</div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h2>⚠️ Misclassification Error Log</h2>
+                        </div>
+                        <div class="panel-content" id="error-log-container" style="max-height:400px; overflow-y:auto">
+                            <div style="color:var(--text-muted); padding:2rem; text-align:center">No classification errors recorded.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: CLOSED-LOOP FLYWHEEL -->
+            <div id="tab-optimization" class="tab-pane">
+                <div class="panel" style="margin-bottom:2rem">
+                    <div class="panel-header">
+                        <h2>🔄 Closed-Loop Training Data Optimization Flywheel</h2>
+                        <button id="start-flywheel-btn" class="primary-btn">⚡ Run Optimization Cycle</button>
+                    </div>
+                    <div class="panel-content">
+                        <p style="color:var(--text-muted); margin-bottom:1.5rem">
+                            Intentra's autonomous flywheel trains the baseline classifier, diagnoses decision boundary confusion pairs, synthesizes targeted boundary & hard-negative examples, validates candidates through quality gates, retrains, and promotes version N+1 via a Multi-Objective Gate.
+                        </p>
+
+                        <!-- Stepper Timeline -->
+                        <div class="flywheel-stepper" id="flywheel-stepper">
+                            <div class="flywheel-step" id="fly-step-1">
+                                <div class="step-num">1</div>
+                                <div class="step-title">Train Baseline</div>
+                            </div>
+                            <div class="flywheel-step" id="fly-step-2">
+                                <div class="step-num">2</div>
+                                <div class="step-title">Diagnose Errors</div>
+                            </div>
+                            <div class="flywheel-step" id="fly-step-3">
+                                <div class="step-num">3</div>
+                                <div class="step-title">Targeted Gen</div>
+                            </div>
+                            <div class="flywheel-step" id="fly-step-4">
+                                <div class="step-num">4</div>
+                                <div class="step-title">Retrain v(N+1)</div>
+                            </div>
+                            <div class="flywheel-step" id="fly-step-5">
+                                <div class="step-num">5</div>
+                                <div class="step-title">Promotion Gate</div>
+                            </div>
+                        </div>
+
+                        <div id="flywheel-results-card" class="flywheel-results-box hidden" style="margin-top:2rem">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: DATASET VERSIONS -->
+            <div id="tab-datasets" class="tab-pane">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📦 Immutable Dataset Versions & Lineage</h2>
+                        <button id="refresh-versions-btn" class="secondary-btn btn-sm">🔄 Refresh</button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="table-responsive">
+                            <table class="dataset-table" id="versions-table">
+                                <thead>
+                                    <tr>
+                                        <th>Version</th>
+                                        <th>Status</th>
+                                        <th>Total Examples</th>
+                                        <th>Composition</th>
+                                        <th>Generation Reason / Trigger</th>
+                                        <th>Created At</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="versions-table-body">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: DATA EFFICIENCY BENCHMARK -->
+            <div id="tab-benchmarks" class="tab-pane">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2>📈 Data Efficiency Benchmark (Naive vs Intentra V1 vs V2 Closed-Loop)</h2>
+                        <button id="run-benchmark-btn" class="primary-btn btn-sm">▶️ Run 3-Seed Benchmark</button>
+                    </div>
+                    <div class="panel-content" id="benchmark-results-container">
+                        <div style="color:var(--text-muted); padding:2rem; text-align:center">
+                            Click "Run 3-Seed Benchmark" to execute the comparative experiment across seeds [42, 123, 456].
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -293,6 +484,6 @@
     <!-- Toast Notification Container -->
     <div id="toast-container" class="toast-container"></div>
 
-    <script src="app_connected.js?v=7"></script>
+    <script src="app_connected.js?v=8"></script>
 </body>
 </html>

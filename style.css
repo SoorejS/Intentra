@@ -1590,4 +1590,232 @@ td[contenteditable="true"]:focus {
     color: var(--text-muted);
 }
 
+/* ─── V2 Closed-Loop Tabs & Components ────────────────────────── */
+.v2-tab-nav {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.v2-tab-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    padding: 0.6rem 1.1rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    border-radius: 8px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.v2-tab-btn:hover {
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.v2-tab-btn.active {
+    color: white;
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.4);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+.v2-tab-btn.highlight-tab {
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--amber);
+}
+
+.v2-tab-btn.highlight-tab.active {
+    background: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.6);
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.v2-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 860px) {
+    .v2-card-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── Confusion Matrix Heatmap ────────────────────────────────── */
+.confusion-matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.confusion-matrix-table th, .confusion-matrix-table td {
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+}
+
+.confusion-matrix-table th {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.cm-cell-diag {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34D399;
+    font-weight: 600;
+}
+
+.cm-cell-err {
+    background: rgba(239, 68, 68, 0.25);
+    color: #F87171;
+    font-weight: 600;
+}
+
+.cm-cell-zero {
+    color: var(--text-muted);
+    opacity: 0.5;
+}
+
+/* ─── Flywheel Stepper ────────────────────────────────────────── */
+.flywheel-stepper {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .flywheel-stepper { grid-template-columns: 1fr; }
+}
+
+.flywheel-step {
+    background: rgba(20, 24, 36, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 0.75rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.flywheel-step .step-num {
+    width: 28px;
+    height: 28px;
+    line-height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+    margin: 0 auto 0.5rem;
+    font-weight: 600;
+    font-size: 0.82rem;
+}
+
+.flywheel-step .step-title {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.flywheel-step.active {
+    border-color: var(--accent);
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.flywheel-step.active .step-num {
+    background: var(--accent);
+    color: white;
+}
+
+.flywheel-step.active .step-title {
+    color: white;
+}
+
+.flywheel-step.completed {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.flywheel-step.completed .step-num {
+    background: var(--success);
+    color: white;
+}
+
+.flywheel-results-box {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    border-radius: 12px;
+    padding: 1.5rem;
+    backdrop-filter: blur(12px);
+}
+
+.metric-diff-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 6px;
+}
+
+.diff-positive {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34D399;
+}
+
+.diff-negative {
+    background: rgba(239, 68, 68, 0.2);
+    color: #F87171;
+}
+
+.diff-neutral {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+}
+
+.status-chip {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-chip.promoted {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34D399;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.status-chip.rejected {
+    background: rgba(239, 68, 68, 0.2);
+    color: #F87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.status-chip.training, .status-chip.draft {
+    background: rgba(245, 158, 11, 0.2);
+    color: var(--amber);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
 

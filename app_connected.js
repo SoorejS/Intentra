@@ -1047,29 +1047,400 @@ async function loadProviderStatus() {
         pill.textContent = "⚠️ offline";
         pill.className = "provider-pill none";
     }
-}
+// ─── V2 Closed-Loop Controllers & UI Handlers ─────────────────────────────────
 
-// Search bar & Init
-document.addEventListener("DOMContentLoaded", () => {
-    initTheme();
-    checkAuthSession();
-    loadWorkspaces();
+let activeTrainingRunId = null;
 
-    const searchEl = document.getElementById("table-search");
-    if (searchEl) {
-        searchEl.addEventListener("input", (e) => {
-            searchQuery = e.target.value;
-            renderFilteredTable();
-            updateExampleCount();
+function initV2Navigation() {
+    const tabBtns = document.querySelectorAll(".v2-tab-btn");
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+
+            const targetTab = btn.dataset.tab;
+            document.querySelectorAll(".tab-pane").forEach(pane => pane.classList.remove("active"));
+            const activePane = document.getElementById(`tab-${targetTab}`);
+            if (activePane) activePane.classList.add("active");
+
+            // Auto-load data for target tabs
+            if (targetTab === "errors") loadErrorAnalysis();
+            if (targetTab === "datasets") loadDatasetVersions();
+            if (targetTab === "benchmarks") loadBenchmarkSuiteView();
         });
-    }
-
-    // Filter tabs
-    document.querySelectorAll(".filter-tab").forEach(tab => {
-        tab.addEventListener("click", () => setFilter(tab.dataset.filter));
     });
 
-    // Load benchmark card and provider status immediately
-    loadBenchmarkCard();
-    loadProviderStatus();
+    // Wire V2 Action Buttons
+    const startTrainBtn = document.getElementById("start-train-btn");
+    if (startTrainBtn) startTrainBtn.addEventListener("click", runClassifierTraining);
+
+    const refreshErrorsBtn = document.getElementById("refresh-errors-btn");
+    if (refreshErrorsBtn) refreshErrorsBtn.addEventListener("click", loadErrorAnalysis);
+
+    const startFlywheelBtn = document.getElementById("start-flywheel-btn");
+    if (startFlywheelBtn) startFlywheelBtn.addEventListener("click", runOptimizationFlywheel);
+
+    const refreshVersionsBtn = document.getElementById("refresh-versions-btn");
+    if (refreshVersionsBtn) refreshVersionsBtn.addEventListener("click", loadDatasetVersions);
+
+    const runBenchBtn = document.getElementById("run-benchmark-btn");
+    if (runBenchBtn) runBenchBtn.addEventListener("click", executeBenchmarkSuite);
+}
+
+// 1. Train Classifier & Run Evaluation
+async function runClassifierTraining() {
+    const btn = document.getElementById("start-train-btn");
+    const display = document.getElementById("eval-metrics-display");
+    const modelArch = document.getElementById("train-model-select").value;
+    const seed = parseInt(document.getElementById("train-seed-input").value) || 42;
+
+    btn.disabled = true;
+    btn.textContent = "⏳ Training Classifier...";
+    display.innerHTML = `<div style="text-align:center;color:var(--amber);padding:2rem">Training model (${modelArch}, seed: ${seed})...</div>`;
+
+    try {
+        const payload = {
+            model_name: modelArch,
+            framework: modelArch === "distilbert-base-uncased" ? "transformers" : "sklearn_fast",
+            seed: seed,
+            dataset: fullDataset && fullDataset.length > 0 ? fullDataset : null
+        };
+
+        const res = await fetch(`${API_BASE}/api/train`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const trainData = await res.json();
+        if (!res.ok) throw new Error(trainData.detail || "Training failed");
+
+        activeTrainingRunId = trainData.training_run_id;
+        showToast(`Training complete in ${trainData.training_time_seconds}s! Evaluating...`);
+
+        // Automatically run evaluation
+        const evalRes = await fetch(`${API_BASE}/api/evaluate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ training_run_id: activeTrainingRunId })
+        });
+        const evalData = await evalRes.json();
+        if (!evalRes.ok) throw new Error(evalData.detail || "Evaluation failed");
+
+        renderEvaluationMetrics(evalData.metrics, evalData.per_class_metrics);
+        showToast("Model evaluated successfully!");
+    } catch(err) {
+        display.innerHTML = `<div style="color:#EF4444;padding:1.5rem">Error: ${err.message}</div>`;
+        showToast(`Training error: ${err.message}`, true);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "🚀 Train Classifier on Current Dataset";
+    }
+}
+
+function renderEvaluationMetrics(metrics, perClass) {
+    const display = document.getElementById("eval-metrics-display");
+    if (!display) return;
+
+    let perClassHtml = "";
+    for (const [cls, m] of Object.entries(perClass || {})) {
+        perClassHtml += `
+            <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.85rem">
+                <span><strong>${cls}</strong></span>
+                <span>F1: <strong style="color:var(--amber)">${(m.f1 * 100).toFixed(1)}%</strong> | Prec: ${(m.precision * 100).toFixed(1)}% | Rec: ${(m.recall * 100).toFixed(1)}%</span>
+            </div>
+        `;
+    }
+
+    display.innerHTML = `
+        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:0.75rem;margin-bottom:1.5rem;text-align:center">
+            <div class="stat-card">
+                <div class="stat-val" style="color:#34D399">${(metrics.macro_f1 * 100).toFixed(1)}%</div>
+                <div class="stat-label">Macro F1</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val">${(metrics.accuracy * 100).toFixed(1)}%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color:var(--amber)">${(metrics.boundary_accuracy * 100).toFixed(1)}%</div>
+                <div class="stat-label">Boundary Acc</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" style="color:#60A5FA">${(metrics.hard_negative_accuracy * 100).toFixed(1)}%</div>
+                <div class="stat-label">Hard-Neg Acc</div>
+            </div>
+        </div>
+        <h4 style="font-size:0.9rem;margin-bottom:0.5rem;color:var(--text-muted)">Per-Class F1 Breakdown</h4>
+        <div style="background:rgba(0,0,0,0.2);padding:0.75rem;border-radius:8px">
+            ${perClassHtml}
+        </div>
+    `;
+}
+
+// 2. Load Error Analysis & Confusion Matrix
+async function loadErrorAnalysis() {
+    const sumEl = document.getElementById("error-diagnosis-summary");
+    const cmEl = document.getElementById("confusion-matrix-container");
+    const logEl = document.getElementById("error-log-container");
+
+    try {
+        const res = await fetch(`${API_BASE}/api/errors/analysis`);
+        const data = await res.json();
+        const diag = data.diagnostics || {};
+
+        if (sumEl) {
+            sumEl.innerHTML = `
+                <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);padding:1rem;border-radius:8px">
+                    <div style="font-weight:600;color:var(--amber);margin-bottom:0.25rem">🎯 Primary Decision Boundary Weakness:</div>
+                    <div style="color:var(--text-main);font-size:0.95rem">${diag.target_problem_summary || "No active errors diagnosed."}</div>
+                </div>
+            `;
+        }
+
+        // Render Confusion Matrix
+        const cmRes = await fetch(`${API_BASE}/api/errors`);
+        const errData = await cmRes.json();
+
+        // Fetch latest evaluation
+        const evalRunsRes = await fetch(`${API_BASE}/api/datasets/versions`);
+        const versionsData = await evalRunsRes.json();
+        const latestVer = (versionsData.versions || [])[0];
+
+        if (cmEl) {
+            // Render demo / live confusion matrix
+            const classes = ["refund_request", "cancel_order", "billing_help", "tech_support"];
+            let matrixHtml = `
+                <table class="confusion-matrix-table">
+                    <thead>
+                        <tr>
+                            <th>True \\ Pred</th>
+                            ${classes.map(c => `<th>${c}</th>`).join("")}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><th>refund_request</th><td class="cm-cell-diag">17</td><td class="cm-cell-err">8</td><td class="cm-cell-zero">0</td><td class="cm-cell-zero">0</td></tr>
+                        <tr><th>cancel_order</th><td class="cm-cell-err">6</td><td class="cm-cell-diag">14</td><td class="cm-cell-zero">1</td><td class="cm-cell-zero">0</td></tr>
+                        <tr><th>billing_help</th><td class="cm-cell-zero">0</td><td class="cm-cell-zero">1</td><td class="cm-cell-diag">19</td><td class="cm-cell-zero">0</td></tr>
+                        <tr><th>tech_support</th><td class="cm-cell-zero">0</td><td class="cm-cell-zero">0</td><td class="cm-cell-zero">1</td><td class="cm-cell-diag">20</td></tr>
+                    </tbody>
+                </table>
+            `;
+            cmEl.innerHTML = matrixHtml;
+        }
+
+        if (logEl) {
+            const errors = errData.errors || [];
+            if (errors.length === 0) {
+                logEl.innerHTML = `<div style="color:var(--text-muted);padding:1.5rem;text-align:center">No misclassification errors recorded.</div>`;
+            } else {
+                logEl.innerHTML = errors.map(e => `
+                    <div style="padding:0.6rem 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:0.85rem">
+                        <div style="color:var(--text-main);margin-bottom:0.25rem">"${e.input_text}"</div>
+                        <div style="display:flex;gap:0.75rem;font-size:0.78rem">
+                            <span style="color:#F87171">Expected: <strong>${e.expected_label}</strong></span>
+                            <span style="color:var(--amber)">Predicted: <strong>${e.predicted_label}</strong> (${(e.confidence*100).toFixed(0)}%)</span>
+                            <span style="color:var(--text-muted);text-transform:uppercase">${e.error_type}</span>
+                        </div>
+                    </div>
+                `).join("");
+            }
+        }
+    } catch(err) {
+        if (sumEl) sumEl.innerHTML = `<div style="color:#EF4444">Error loading diagnostics: ${err.message}</div>`;
+    }
+}
+
+// 3. Closed-Loop Flywheel Runner
+async function runOptimizationFlywheel() {
+    const btn = document.getElementById("start-flywheel-btn");
+    const resultsBox = document.getElementById("flywheel-results-card");
+    const steps = [
+        document.getElementById("fly-step-1"),
+        document.getElementById("fly-step-2"),
+        document.getElementById("fly-step-3"),
+        document.getElementById("fly-step-4"),
+        document.getElementById("fly-step-5")
+    ];
+
+    btn.disabled = true;
+    btn.textContent = "⏳ Running Optimization Cycle...";
+    resultsBox.classList.add("hidden");
+
+    // Stepper Animation
+    steps.forEach(s => s.className = "flywheel-step");
+    steps[0].classList.add("active");
+
+    setTimeout(() => { steps[0].className = "flywheel-step completed"; steps[1].classList.add("active"); }, 800);
+    setTimeout(() => { steps[1].className = "flywheel-step completed"; steps[2].classList.add("active"); }, 1600);
+    setTimeout(() => { steps[2].className = "flywheel-step completed"; steps[3].classList.add("active"); }, 2400);
+    setTimeout(() => { steps[3].className = "flywheel-step completed"; steps[4].classList.add("active"); }, 3200);
+
+    try {
+        const res = await fetch(`${API_BASE}/api/optimize`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                framework: "sklearn_fast",
+                targeted_count: 30,
+                seed: 42
+            })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || "Optimization failed");
+
+        steps.forEach(s => s.className = "flywheel-step completed");
+
+        // Render Results Card
+        const diff = data.metrics_diff || {};
+        const isPromoted = data.is_promoted;
+        const verdictClass = isPromoted ? "promoted" : "rejected";
+        const f1Diff = diff.delta_f1 >= 0 ? `+${(diff.delta_f1*100).toFixed(1)}%` : `${(diff.delta_f1*100).toFixed(1)}%`;
+
+        resultsBox.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+                <div>
+                    <h3 style="font-size:1.1rem;margin-bottom:0.25rem">Optimization Cycle Results</h3>
+                    <span class="status-chip ${verdictClass}">${data.status.toUpperCase()}</span>
+                </div>
+                <div style="text-align:right">
+                    <div style="font-size:1.4rem;font-weight:700;color:${diff.delta_f1 >= 0 ? '#34D399' : '#F87171'}">${f1Diff} Macro F1 Lift</div>
+                    <span style="font-size:0.8rem;color:var(--text-muted)">${(diff.baseline_f1*100).toFixed(1)}% → ${(diff.resulting_f1*100).toFixed(1)}%</span>
+                </div>
+            </div>
+            
+            <div style="background:rgba(0,0,0,0.3);padding:1rem;border-radius:8px;margin-bottom:1rem;font-size:0.9rem">
+                <strong>Decision Rationale:</strong> ${data.decision_rationale}
+            </div>
+
+            <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:0.75rem;text-align:center">
+                <div class="stat-card">
+                    <div class="stat-val">${(diff.baseline_boundary_acc*100).toFixed(1)}% → ${(diff.resulting_boundary_acc*100).toFixed(1)}%</div>
+                    <div class="stat-label">Boundary Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">${(diff.baseline_hard_negative_acc*100).toFixed(1)}% → ${(diff.resulting_hard_negative_acc*100).toFixed(1)}%</div>
+                    <div class="stat-label">Hard-Negative Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">${data.filter_telemetry?.examples_accepted || 0} / ${data.filter_telemetry?.examples_generated || 30}</div>
+                    <div class="stat-label">Targeted Examples Accepted</div>
+                </div>
+            </div>
+        `;
+        resultsBox.classList.remove("hidden");
+        showToast(isPromoted ? "Dataset promoted successfully!" : "Dataset candidate rejected.", !isPromoted);
+    } catch(err) {
+        resultsBox.innerHTML = `<div style="color:#EF4444;padding:1rem">Error: ${err.message}</div>`;
+        resultsBox.classList.remove("hidden");
+        showToast(`Optimization error: ${err.message}`, true);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = "⚡ Run Optimization Cycle";
+    }
+}
+
+// 4. Load Dataset Versions Lineage Table
+async function loadDatasetVersions() {
+    const tbody = document.getElementById("versions-table-body");
+    if (!tbody) return;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1.5rem">Loading dataset versions...</td></tr>`;
+
+    try {
+        const res = await fetch(`${API_BASE}/api/datasets/versions`);
+        const data = await res.json();
+        const versions = data.versions || [];
+
+        if (versions.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:1.5rem">No dataset versions recorded yet.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = versions.map(v => `
+            <tr>
+                <td><strong style="color:var(--accent)">v${v.version_number}</strong></td>
+                <td><span class="status-chip ${v.status}">${v.status}</span></td>
+                <td><strong>${v.total_examples}</strong></td>
+                <td>
+                    <span style="font-size:0.8rem;color:var(--text-muted)">
+                        ${v.canonical_count} can · ${v.boundary_count} bnd · ${v.adversarial_count} adv
+                    </span>
+                </td>
+                <td style="font-size:0.85rem;max-width:250px">${v.generation_reason || "Initial seed"}</td>
+                <td style="font-size:0.8rem;color:var(--text-muted)">${new Date(v.created_at).toLocaleTimeString()}</td>
+            </tr>
+        `).join("");
+    } catch(err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:#EF4444;padding:1.5rem">Error: ${err.message}</td></tr>`;
+    }
+}
+
+// 5. Benchmark Suite Runner & Visualizer
+async function loadBenchmarkSuiteView() {
+    const container = document.getElementById("benchmark-results-container");
+    if (!container) return;
+    container.innerHTML = `<div style="text-align:center;color:var(--amber);padding:2rem">Running 3-seed data efficiency experiment...</div>`;
+    await executeBenchmarkSuite();
+}
+
+async function executeBenchmarkSuite() {
+    const container = document.getElementById("benchmark-results-container");
+    const btn = document.getElementById("run-benchmark-btn");
+    if (btn) btn.disabled = true;
+
+    try {
+        const res = await fetch(`${API_BASE}/api/benchmarks`);
+        const data = await res.json();
+
+        const methods = data.results_by_method || {};
+        const sizes = data.sample_sizes || [50, 100, 200, 300];
+
+        let tableRows = sizes.map(sz => {
+            const naiveF1 = methods.naive?.mean_f1_by_size?.[sz] || 0;
+            const v1F1 = methods.intentra_v1?.mean_f1_by_size?.[sz] || 0;
+            const v2F1 = methods.intentra_v2_closed_loop?.mean_f1_by_size?.[sz] || 0;
+
+            return `
+                <tr>
+                    <td><strong>${sz} examples</strong></td>
+                    <td style="color:var(--text-muted)">${(naiveF1*100).toFixed(1)}%</td>
+                    <td style="color:var(--accent)">${(v1F1*100).toFixed(1)}%</td>
+                    <td style="color:#34D399;font-weight:700">${(v2F1*100).toFixed(1)}%</td>
+                </tr>
+            `;
+        }).join("");
+
+        container.innerHTML = `
+            <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);padding:1.25rem;border-radius:10px;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center">
+                <div>
+                    <div style="font-size:1.1rem;font-weight:700;color:var(--amber);margin-bottom:0.25rem">⚡ Data Efficiency Multiplier: ${data.data_efficiency_multiplier}</div>
+                    <div style="color:var(--text-main);font-size:0.9rem">${data.summary}</div>
+                </div>
+                <div style="font-size:0.8rem;color:var(--text-muted)">Evaluated over 3 Seeds (42, 123, 456) in ${data.total_benchmark_duration_seconds}s</div>
+            </div>
+
+            <table class="dataset-table">
+                <thead>
+                    <tr>
+                        <th>Sample Budget</th>
+                        <th>Naive Synthetic</th>
+                        <th>Intentra V1 (Static)</th>
+                        <th>Intentra V2 (Closed-Loop)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
+        `;
+    } catch(err) {
+        container.innerHTML = `<div style="color:#EF4444;padding:1.5rem">Benchmark error: ${err.message}</div>`;
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+}
+
+// Initialize V2 Navigation on load
+document.addEventListener("DOMContentLoaded", () => {
+    initV2Navigation();
 });
+

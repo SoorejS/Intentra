@@ -95,13 +95,31 @@ def call_llm(prompt: str, max_tokens: int = 2000, temperature: float = 0.7) -> s
                 api_key=os.environ["GROQ_API_KEY"],
                 base_url=PROVIDER_BASES["groq"],
             )
-            resp = client.chat.completions.create(
-                model=models["groq"],
-                messages=[{"role": "user", "content": prompt}],
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            return resp.choices[0].message.content
+            groq_models_to_try = [
+                models["groq"],
+                "llama-3.3-70b-versatile",
+                "llama-3.1-70b-versatile",
+                "llama-3.1-8b-instant",
+                "llama3-70b-8192",
+                "llama3-8b-8192",
+                "mixtral-8x7b-32768"
+            ]
+            last_err = None
+            for m in groq_models_to_try:
+                try:
+                    resp = client.chat.completions.create(
+                        model=m,
+                        messages=[{"role": "user", "content": prompt}],
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                    )
+                    return resp.choices[0].message.content
+                except Exception as ex:
+                    last_err = ex
+                    if "model_not_found" in str(ex) or "404" in str(ex):
+                        continue
+                    raise ex
+            raise last_err
 
         # ── OpenRouter ──────────────────────────────────────────────────────
         if provider == "openrouter":

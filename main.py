@@ -739,5 +739,423 @@ def get_analytics(db: Session = Depends(get_db), user = Depends(get_current_user
         "active_user": user.email if user else "Guest Developer"
     }
 
+# ─── V2 Closed-Loop Training & Optimization Endpoints ─────────────────────────
+
+class TrainRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    dataset_version_id: Optional[str] = None
+    dataset: Optional[list] = None
+    model_name: Optional[str] = "distilbert-base-uncased"
+    framework: Optional[str] = "sklearn_fast"
+    seed: Optional[int] = 42
+    epochs: Optional[int] = 3
+    project_id: Optional[int] = None
+
+class EvaluateRequest(BaseModel):
+    training_run_id: str
+    test_dataset: Optional[list] = None
+    split_type: Optional[str] = "val"
+
+class OptimizeRequest(BaseModel):
+    model_config = {"protected_namespaces": ()}
+    base_version_id: Optional[str] = None
+    val_dataset: Optional[list] = None
+    test_dataset: Optional[list] = None
+    framework: Optional[str] = "sklearn_fast"
+    model_name: Optional[str] = "distilbert-base-uncased"
+    targeted_count: Optional[int] = 30
+    seed: Optional[int] = 42
+    project_id: Optional[int] = None
+
+
+# In-memory store for active trained predictors during session
+ACTIVE_PREDICTORS = {}
+ACTIVE_OPTIMIZATION_JOBS = {}
+
+
+@app.post("/api/train")
+def api_train_classifier(req: TrainRequest, db: Session = Depends(get_db), user = Depends(get_current_user_optional)):
+    """Train a classifier from a dataset version or inline dataset."""
+    from core.classifier_trainer import train_classifier
+    import uuid
+
+    train_data = []
+    version_id = req.dataset_version_id
+
+    if version_id:
+        v = db.query(models.DatasetVersion).filter(models.DatasetVersion.id == version_id).first()
+        if not v or not v.dataset:
+            raise HTTPException(status_code=404, detail="Dataset version not found or empty")
+        train_data = v.dataset
+    elif req.dataset:
+        train_data = req.dataset
+        # Create draft dataset version
+        v = models.DatasetVersion(
+            id=str(uuid.uuid4()),
+            project_id=req.project_id,
+            version_number=1,
+            total_examples=len(train_data),
+            generated_by="user_upload",
+            dataset_json=json.dumps(train_data),
+            status="training"
+        )
+        db.add(v)
+        db.commit()
+        version_id = v.id
+    else:
+        # Check if any generation exists
+        gen = db.query(models.Generation).order_by(models.Generation.created_at.desc()).first()
+        if gen and gen.dataset:
+            train_data = gen.dataset
+            v = models.DatasetVersion(
+                id=str(uuid.uuid4()),
+                project_id=req.project_id,
+                version_number=1,
+                total_examples=len(train_data),
+                generated_by="initial_generation",
+                dataset_json=gen.dataset_json,
+                schema_json=gen.schema_json,
+                status="training"
+            )
+            db.add(v)
+            db.commit()
+            version_id = v.id
+        else:
+            raise HTTPException(status_code=400, detail="No dataset provided and no previous generation found to train.")
+
+    try:
+        train_res = train_classifier(
+            dataset=train_data,
+            model_name=req.model_name or "distilbert-base-uncased",
+            framework=req.framework or "sklearn_fast",
+            seed=req.seed or 42,
+            epochs=req.epochs or 3
+        )
+
+        run_id = str(uuid.uuid4())
+        ACTIVE_PREDICTORS[run_id] = train_res["predictor"]
+
+        training_run = models.TrainingRun(
+            id=run_id,
+            project_id=req.project_id,
+            dataset_version_id=version_id,
+            model_name=train_res["model_name"],
+            model_type="classifier",
+            framework=req.framework or "sklearn_fast",
+            seed=req.seed or 42,
+            training_time_seconds=train_res["training_time_seconds"],
+            training_status="completed",
+            artifact_path=train_res.get("artifact_path"),
+            completed_at=datetime.datetime.utcnow()
+        )
+        db.add(training_run)
+        db.commit()
+
+        return {
+            "training_run_id": run_id,
+            "status": "completed",
+            "model_name": train_res["model_name"],
+            "framework": train_res["framework"],
+            "seed": train_res["seed"],
+            "training_time_seconds": train_res["training_time_seconds"],
+            "classes": train_res["classes"],
+            "dataset_version_id": version_id,
+            "total_examples": len(train_data)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Training failed: {str(e)}")
+
+
+@app.get("/api/train/{run_id}")
+def api_get_training_run(run_id: str, db: Session = Depends(get_db)):
+    run = db.query(models.TrainingRun).filter(models.TrainingRun.id == run_id).first()
+    if not run:
+        raise HTTPException(status_code=404, detail="Training run not found")
+    return {
+        "id": run.id,
+        "dataset_version_id": run.dataset_version_id,
+        "model_name": run.model_name,
+        "framework": run.framework,
+        "seed": run.seed,
+        "training_time_seconds": run.training_time_seconds,
+        "training_status": run.training_status,
+        "created_at": run.created_at.isoformat() if run.created_at else None,
+        "completed_at": run.completed_at.isoformat() if run.completed_at else None
+    }
+
+
+@app.post("/api/evaluate")
+def api_evaluate_model(req: EvaluateRequest, db: Session = Depends(get_db)):
+    from core.evaluation_engine import evaluate_model
+    from core.benchmark_suite import get_holdout_test_set
+    import uuid
+
+    predictor = ACTIVE_PREDICTORS.get(req.training_run_id)
+    train_run = db.query(models.TrainingRun).filter(models.TrainingRun.id == req.training_run_id).first()
+    if not train_run:
+        raise HTTPException(status_code=404, detail="Training run not found")
+
+    if not predictor:
+        # Re-instantiate from dataset version if needed
+        d_ver = db.query(models.DatasetVersion).filter(models.DatasetVersion.id == train_run.dataset_version_id).first()
+        if d_ver and d_ver.dataset:
+            from core.classifier_trainer import train_classifier
+            res = train_classifier(d_ver.dataset, model_name=train_run.model_name, framework=train_run.framework, seed=train_run.seed)
+            predictor = res["predictor"]
+            ACTIVE_PREDICTORS[req.training_run_id] = predictor
+        else:
+            raise HTTPException(status_code=400, detail="Active predictor expired or dataset missing. Please train model again.")
+
+    test_data = req.test_dataset or get_holdout_test_set()
+    eval_res = evaluate_model(predictor, test_data)
+
+    eval_run = models.EvaluationRun(
+        id=str(uuid.uuid4()),
+        training_run_id=req.training_run_id,
+        test_set_version="holdout_test_v1",
+        split_type=req.split_type or "val",
+        accuracy=eval_res["accuracy"],
+        macro_f1=eval_res["macro_f1"],
+        weighted_f1=eval_res["weighted_f1"],
+        precision=eval_res["precision"],
+        recall=eval_res["recall"],
+        hard_negative_accuracy=eval_res["hard_negative_accuracy"],
+        boundary_accuracy=eval_res["boundary_accuracy"],
+        adversarial_accuracy=eval_res["adversarial_accuracy"],
+        per_class_metrics_json=json.dumps(eval_res["per_class_metrics"]),
+        confusion_matrix_json=json.dumps(eval_res["confusion_matrix"])
+    )
+    db.add(eval_run)
+    db.commit()
+
+    # Record classification errors
+    from core.error_analyzer import analyze_errors
+    diag = analyze_errors(eval_res)
+    for err in diag.get("categorized_errors", []):
+        db_err = models.ClassificationError(
+            id=str(uuid.uuid4()),
+            evaluation_run_id=eval_run.id,
+            input_text=err["input_text"],
+            expected_label=err["expected_label"],
+            predicted_label=err["predicted_label"],
+            confidence=err["confidence"],
+            error_type=err["error_type"]
+        )
+        db.add(db_err)
+    db.commit()
+
+    return {
+        "evaluation_run_id": eval_run.id,
+        "metrics": {
+            "macro_f1": eval_res["macro_f1"],
+            "accuracy": eval_res["accuracy"],
+            "precision": eval_res["precision"],
+            "recall": eval_res["recall"],
+            "boundary_accuracy": eval_res["boundary_accuracy"],
+            "hard_negative_accuracy": eval_res["hard_negative_accuracy"],
+            "adversarial_accuracy": eval_res["adversarial_accuracy"]
+        },
+        "per_class_metrics": eval_res["per_class_metrics"],
+        "confusion_matrix": eval_res["confusion_matrix"],
+        "diagnostics": diag
+    }
+
+
+@app.get("/api/evaluate/{id}")
+def api_get_evaluation(id: str, db: Session = Depends(get_db)):
+    eval_run = db.query(models.EvaluationRun).filter(models.EvaluationRun.id == id).first()
+    if not eval_run:
+        raise HTTPException(status_code=404, detail="Evaluation run not found")
+    return {
+        "id": eval_run.id,
+        "training_run_id": eval_run.training_run_id,
+        "metrics": {
+            "macro_f1": eval_run.macro_f1,
+            "accuracy": eval_run.accuracy,
+            "precision": eval_run.precision,
+            "recall": eval_run.recall,
+            "boundary_accuracy": eval_run.boundary_accuracy,
+            "hard_negative_accuracy": eval_run.hard_negative_accuracy,
+            "adversarial_accuracy": eval_run.adversarial_accuracy
+        },
+        "per_class_metrics": eval_run.per_class_metrics,
+        "confusion_matrix": eval_run.confusion_matrix,
+        "created_at": eval_run.created_at.isoformat() if eval_run.created_at else None
+    }
+
+
+@app.get("/api/errors")
+def api_get_errors(evaluation_run_id: Optional[str] = None, db: Session = Depends(get_db)):
+    query = db.query(models.ClassificationError)
+    if evaluation_run_id:
+        query = query.filter(models.ClassificationError.evaluation_run_id == evaluation_run_id)
+    errors = query.order_by(models.ClassificationError.created_at.desc()).limit(100).all()
+    return {
+        "errors": [
+            {
+                "id": e.id,
+                "input_text": e.input_text,
+                "expected_label": e.expected_label,
+                "predicted_label": e.predicted_label,
+                "confidence": e.confidence,
+                "error_type": e.error_type
+            } for e in errors
+        ]
+    }
+
+
+@app.get("/api/errors/analysis")
+def api_get_error_analysis(evaluation_run_id: Optional[str] = None, db: Session = Depends(get_db)):
+    from core.error_analyzer import analyze_errors
+    eval_run = None
+    if evaluation_run_id:
+        eval_run = db.query(models.EvaluationRun).filter(models.EvaluationRun.id == evaluation_run_id).first()
+    else:
+        eval_run = db.query(models.EvaluationRun).order_by(models.EvaluationRun.created_at.desc()).first()
+
+    if not eval_run:
+        return {"diagnostics": {"weakest_classes": [], "confused_pairs": [], "target_problem_summary": "No evaluations run yet."}}
+
+    eval_dict = {
+        "per_class_metrics": eval_run.per_class_metrics,
+        "confusion_matrix": eval_run.confusion_matrix,
+        "detailed_results": [
+            {
+                "text": err.input_text,
+                "expected_label": err.expected_label,
+                "predicted_label": err.predicted_label,
+                "confidence": err.confidence,
+                "is_correct": False,
+                "type": err.error_type.replace("_failure", "")
+            } for err in eval_run.classification_errors
+        ]
+    }
+    diag = analyze_errors(eval_dict)
+    return {"evaluation_run_id": eval_run.id, "diagnostics": diag}
+
+
+@app.post("/api/optimize")
+def api_run_optimization(req: OptimizeRequest, db: Session = Depends(get_db), user = Depends(get_current_user_optional)):
+    """Run an automated closed-loop optimization cycle."""
+    from core.optimization_engine import run_optimization_cycle
+
+    # Ensure at least one dataset version exists if none provided
+    if not req.base_version_id:
+        latest = db.query(models.DatasetVersion).order_by(models.DatasetVersion.version_number.desc()).first()
+        if not latest:
+            # Auto-seed version 1 from latest generation if available
+            gen = db.query(models.Generation).order_by(models.Generation.created_at.desc()).first()
+            if gen and gen.dataset:
+                import uuid
+                v1 = models.DatasetVersion(
+                    id=str(uuid.uuid4()),
+                    project_id=req.project_id,
+                    version_number=1,
+                    total_examples=len(gen.dataset),
+                    generated_by="initial_generation",
+                    dataset_json=gen.dataset_json,
+                    schema_json=gen.schema_json,
+                    status="promoted"
+                )
+                db.add(v1)
+                db.commit()
+                req.base_version_id = v1.id
+
+    try:
+        result = run_optimization_cycle(
+            db=db,
+            base_version_id=req.base_version_id,
+            val_dataset=req.val_dataset,
+            test_dataset=req.test_dataset,
+            framework=req.framework or "sklearn_fast",
+            model_name=req.model_name or "distilbert-base-uncased",
+            targeted_count=req.targeted_count or 30,
+            seed=req.seed or 42,
+            project_id=req.project_id
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Optimization cycle failed: {str(e)}")
+
+
+@app.get("/api/optimize/{id}")
+def api_get_optimization_cycle(id: str, db: Session = Depends(get_db)):
+    cycle = db.query(models.OptimizationCycle).filter(models.OptimizationCycle.id == id).first()
+    if not cycle:
+        raise HTTPException(status_code=404, detail="Optimization cycle not found")
+    return {
+        "id": cycle.id,
+        "base_dataset_version_id": cycle.base_dataset_version_id,
+        "resulting_dataset_version_id": cycle.resulting_dataset_version_id,
+        "target_problem": cycle.target_problem,
+        "examples_generated": cycle.examples_generated,
+        "examples_accepted": cycle.examples_accepted,
+        "examples_rejected": cycle.examples_rejected,
+        "baseline_f1": cycle.baseline_f1,
+        "resulting_f1": cycle.resulting_f1,
+        "improvement_delta": cycle.improvement_delta,
+        "status": cycle.status,
+        "rejection_reason": cycle.rejection_reason,
+        "telemetry": cycle.telemetry,
+        "created_at": cycle.created_at.isoformat() if cycle.created_at else None,
+        "completed_at": cycle.completed_at.isoformat() if cycle.completed_at else None
+    }
+
+
+@app.get("/api/datasets/versions")
+def api_list_dataset_versions(project_id: Optional[int] = None, db: Session = Depends(get_db)):
+    query = db.query(models.DatasetVersion)
+    if project_id:
+        query = query.filter(models.DatasetVersion.project_id == project_id)
+    versions = query.order_by(models.DatasetVersion.version_number.desc()).all()
+    return {
+        "versions": [
+            {
+                "id": v.id,
+                "version_number": v.version_number,
+                "parent_version_id": v.parent_version_id,
+                "total_examples": v.total_examples,
+                "canonical_count": v.canonical_count,
+                "boundary_count": v.boundary_count,
+                "adversarial_count": v.adversarial_count,
+                "generated_by": v.generated_by,
+                "generation_reason": v.generation_reason,
+                "status": v.status,
+                "created_at": v.created_at.isoformat() if v.created_at else None,
+                "promoted_at": v.promoted_at.isoformat() if v.promoted_at else None
+            } for v in versions
+        ]
+    }
+
+
+@app.get("/api/datasets/versions/{id}")
+def api_get_dataset_version(id: str, db: Session = Depends(get_db)):
+    v = db.query(models.DatasetVersion).filter(models.DatasetVersion.id == id).first()
+    if not v:
+        raise HTTPException(status_code=404, detail="Dataset version not found")
+    return {
+        "id": v.id,
+        "version_number": v.version_number,
+        "parent_version_id": v.parent_version_id,
+        "total_examples": v.total_examples,
+        "status": v.status,
+        "generated_by": v.generated_by,
+        "generation_reason": v.generation_reason,
+        "dataset": v.dataset,
+        "schema": v.schema,
+        "created_at": v.created_at.isoformat() if v.created_at else None,
+        "promoted_at": v.promoted_at.isoformat() if v.promoted_at else None
+    }
+
+
+@app.get("/api/benchmarks")
+def api_get_benchmarks():
+    """Run/fetch data efficiency benchmark comparing Naive vs V1 vs V2."""
+    from core.benchmark_suite import run_data_efficiency_benchmark
+    res = run_data_efficiency_benchmark(sample_sizes=[50, 100, 200, 300])
+    return res
+
+
 # Mount static files for the frontend
 app.mount("/", StaticFiles(directory=".", html=True), name="static")
+
