@@ -1,0 +1,354 @@
+{
+  "audit_data": {
+    "task": "Customer Support Intent Classification (5 Classes)",
+    "framework": "sklearn_fast",
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      999
+    ],
+    "sample_sizes": [
+      50,
+      100,
+      200,
+      300,
+      500,
+      1000
+    ],
+    "holdout_test_set_size": 50,
+    "dedicated_validation_set_size": 25,
+    "data_leakage_detected": false,
+    "by_method": {
+      "naive": {
+        "50": {
+          "mean_macro_f1": 0.3795,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.4,
+          "mean_boundary_accuracy": 0.381,
+          "mean_hard_negative_accuracy": 0.5,
+          "raw_f1_runs": [
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795
+          ]
+        },
+        "100": {
+          "mean_macro_f1": 0.3795,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.4,
+          "mean_boundary_accuracy": 0.381,
+          "mean_hard_negative_accuracy": 0.5,
+          "raw_f1_runs": [
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795
+          ]
+        },
+        "200": {
+          "mean_macro_f1": 0.3795,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.4,
+          "mean_boundary_accuracy": 0.381,
+          "mean_hard_negative_accuracy": 0.5,
+          "raw_f1_runs": [
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795
+          ]
+        },
+        "300": {
+          "mean_macro_f1": 0.3795,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.4,
+          "mean_boundary_accuracy": 0.381,
+          "mean_hard_negative_accuracy": 0.5,
+          "raw_f1_runs": [
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795,
+            0.3795
+          ]
+        },
+        "500": {
+          "mean_macro_f1": 0.3513,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.38,
+          "mean_boundary_accuracy": 0.3571,
+          "mean_hard_negative_accuracy": 0.5,
+          "raw_f1_runs": [
+            0.3513,
+            0.3513,
+            0.3513,
+            0.3513,
+            0.3513
+          ]
+        },
+        "1000": {
+          "mean_macro_f1": 0.3513,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.38,
+          "mean_boundary_accuracy": 0.3571,
+          "mean_hard_negative_accuracy": 0.5,
+          "raw_f1_runs": [
+            0.3513,
+            0.3513,
+            0.3513,
+            0.3513,
+            0.3513
+          ]
+        }
+      },
+      "intentra_v1": {
+        "50": {
+          "mean_macro_f1": 0.3594,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.34,
+          "mean_boundary_accuracy": 0.3333,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594
+          ]
+        },
+        "100": {
+          "mean_macro_f1": 0.3594,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.34,
+          "mean_boundary_accuracy": 0.3333,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594
+          ]
+        },
+        "200": {
+          "mean_macro_f1": 0.3594,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.34,
+          "mean_boundary_accuracy": 0.3333,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594
+          ]
+        },
+        "300": {
+          "mean_macro_f1": 0.3594,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.34,
+          "mean_boundary_accuracy": 0.3333,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594
+          ]
+        },
+        "500": {
+          "mean_macro_f1": 0.3594,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.34,
+          "mean_boundary_accuracy": 0.3333,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594
+          ]
+        },
+        "1000": {
+          "mean_macro_f1": 0.3594,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.34,
+          "mean_boundary_accuracy": 0.3333,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594,
+            0.3594
+          ]
+        }
+      },
+      "intentra_v2": {
+        "50": {
+          "mean_macro_f1": 0.1793,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.26,
+          "mean_boundary_accuracy": 0.2619,
+          "mean_hard_negative_accuracy": 0.25,
+          "raw_f1_runs": [
+            0.1793,
+            0.1793,
+            0.1793,
+            0.1793,
+            0.1793
+          ]
+        },
+        "100": {
+          "mean_macro_f1": 0.2202,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.28,
+          "mean_boundary_accuracy": 0.2619,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.2202,
+            0.2202,
+            0.2202,
+            0.2202,
+            0.2202
+          ]
+        },
+        "200": {
+          "mean_macro_f1": 0.2446,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.32,
+          "mean_boundary_accuracy": 0.3095,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.2446,
+            0.2446,
+            0.2446,
+            0.2446,
+            0.2446
+          ]
+        },
+        "300": {
+          "mean_macro_f1": 0.2446,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.32,
+          "mean_boundary_accuracy": 0.3095,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.2446,
+            0.2446,
+            0.2446,
+            0.2446,
+            0.2446
+          ]
+        },
+        "500": {
+          "mean_macro_f1": 0.2806,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.34,
+          "mean_boundary_accuracy": 0.3333,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.2806,
+            0.2806,
+            0.2806,
+            0.2806,
+            0.2806
+          ]
+        },
+        "1000": {
+          "mean_macro_f1": 0.2283,
+          "std_macro_f1": 0.0,
+          "ci95_macro_f1": 0.0,
+          "mean_accuracy": 0.3,
+          "mean_boundary_accuracy": 0.2857,
+          "mean_hard_negative_accuracy": 0.375,
+          "raw_f1_runs": [
+            0.2283,
+            0.2283,
+            0.2283,
+            0.2283,
+            0.2283
+          ]
+        }
+      }
+    },
+    "telemetry": {
+      "total_models_trained": 90,
+      "total_evaluations_run": 90,
+      "total_wall_clock_time_seconds": 23.981,
+      "llm_calls_estimated": 0,
+      "total_cost_estimated_usd": "$0.00"
+    }
+  },
+  "efficiency_analysis": [
+    {
+      "target_macro_f1": 0.4,
+      "n_naive_required": "Target Not Reached",
+      "n_v1_required": "Target Not Reached",
+      "n_v2_required": "Target Not Reached",
+      "data_efficiency_multiplier": "Target Not Reached"
+    },
+    {
+      "target_macro_f1": 0.5,
+      "n_naive_required": "Target Not Reached",
+      "n_v1_required": "Target Not Reached",
+      "n_v2_required": "Target Not Reached",
+      "data_efficiency_multiplier": "Target Not Reached"
+    },
+    {
+      "target_macro_f1": 0.6,
+      "n_naive_required": "Target Not Reached",
+      "n_v1_required": "Target Not Reached",
+      "n_v2_required": "Target Not Reached",
+      "data_efficiency_multiplier": "Target Not Reached"
+    },
+    {
+      "target_macro_f1": 0.65,
+      "n_naive_required": "Target Not Reached",
+      "n_v1_required": "Target Not Reached",
+      "n_v2_required": "Target Not Reached",
+      "data_efficiency_multiplier": "Target Not Reached"
+    },
+    {
+      "target_macro_f1": 0.7,
+      "n_naive_required": "Target Not Reached",
+      "n_v1_required": "Target Not Reached",
+      "n_v2_required": "Target Not Reached",
+      "data_efficiency_multiplier": "Target Not Reached"
+    },
+    {
+      "target_macro_f1": 0.75,
+      "n_naive_required": "Target Not Reached",
+      "n_v1_required": "Target Not Reached",
+      "n_v2_required": "Target Not Reached",
+      "data_efficiency_multiplier": "Target Not Reached"
+    }
+  ],
+  "verdict": "RED"
+}

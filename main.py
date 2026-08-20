@@ -1151,8 +1151,8 @@ def api_get_dataset_version(id: str, db: Session = Depends(get_db)):
 @app.get("/api/benchmarks")
 def api_get_benchmarks():
     """Run/fetch data efficiency benchmark comparing Naive vs V1 vs V2."""
-    from core.benchmark_suite import run_data_efficiency_benchmark
-    res = run_data_efficiency_benchmark(sample_sizes=[50, 100, 200, 300])
+    from core.benchmark_suite import execute_full_benchmark_audit
+    res = execute_full_benchmark_audit(sample_sizes=[50, 100, 200, 300])
     return res
 
 
