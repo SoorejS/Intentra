@@ -1,20 +1,21 @@
 """
-Intentra V2 - Optimization Engine
-Orchestrates the Closed-Loop Training Data Optimization Flywheel:
+Intentra V2.1 - Closed-Loop Optimization Engine
+Orchestrates the Curriculum-Based Training Data Optimization Flywheel:
   1. Train baseline model on current dataset version
   2. Evaluate against validation set (Macro F1, Slices, Confusion Matrix)
   3. Analyze errors and identify weak decision boundary pairs
-  4. Synthesize targeted boundary/hard-negative examples
-  5. Validate candidates through multi-stage quality filter
-  6. Create immutable DatasetVersion N+1
-  7. Retrain candidate model on augmented dataset
-  8. Evaluate candidate model on the EXACT SAME validation set
-  9. Apply Multi-Objective Promotion Gate:
+  4. Determine dynamic curriculum stage (1: Anchor, 2: Variation, 3: Boundary, 4: Contrastive)
+  5. Synthesize curriculum-aware targeted synthetic examples
+  6. Validate candidates through multi-stage quality filter (with anchor coverage & cross-class checks)
+  7. Create immutable DatasetVersion N+1 with full provenance metadata
+  8. Retrain candidate model on augmented dataset
+  9. Evaluate candidate model on the EXACT SAME validation set
+ 10. Apply Multi-Objective Promotion Gate:
        - Delta Macro F1 >= +0.010
        - Delta Hard-Negative Acc >= -0.010 (tolerance)
        - Delta Boundary Acc >= -0.010 (tolerance)
        - Targeted confusion pair improved OR Delta Macro F1 >= +0.020
- 10. Persist full lineage, training runs, evaluations, errors, and cycle telemetry.
+ 11. Persist full lineage, training runs, evaluations, errors, and cycle telemetry.
 """
 
 import time
@@ -26,6 +27,7 @@ from core.evaluation_engine import evaluate_model
 from core.error_analyzer import analyze_errors
 from core.targeted_generator import generate_targeted_data
 from core.quality_filter import filter_candidate_examples
+from core.curriculum_scheduler import determine_curriculum_stage, CurriculumPolicy
 import models
 
 
@@ -109,10 +111,11 @@ def run_optimization_cycle(
     targeted_count: int = 30,
     seed: int = 42,
     project_id: int | None = None,
+    curriculum_stage: int | None = None,
     progress_callback = None
 ) -> dict:
     """
-    Execute a full closed-loop optimization cycle.
+    Execute a full closed-loop optimization cycle with curriculum planning.
     """
     cycle_start = time.time()
 
@@ -140,7 +143,7 @@ def run_optimization_cycle(
     base_data = base_version.dataset
     schema = base_version.schema or {}
 
-    # If no validation set passed, construct deterministic stratified 20% holdout split from base
+    # If no validation set passed, construct deterministic stratified 25% holdout split from base
     if not val_dataset:
         np_seed = seed
         import numpy as np
@@ -165,6 +168,7 @@ def run_optimization_cycle(
     base_train_time = round(time.time() - train_start, 3)
 
     # Persist Baseline TrainingRun
+    now_utc = datetime.datetime.now(datetime.timezone.utc)
     base_train_run = models.TrainingRun(
         id=str(uuid.uuid4()),
         project_id=project_id or base_version.project_id,
@@ -176,7 +180,7 @@ def run_optimization_cycle(
         training_time_seconds=base_train_time,
         training_status="completed",
         artifact_path=baseline_train_res.get("artifact_path"),
-        completed_at=datetime.datetime.utcnow()
+        completed_at=now_utc
     )
     db.add(base_train_run)
     db.commit()
@@ -224,30 +228,44 @@ def run_optimization_cycle(
         db.add(db_err)
     db.commit()
 
-    # Step 5: Synthesize Targeted Boundary / Hard-Negative Examples
-    update_status("Synthesizing Targeted Data", 60, f"Generating targeted data for: {diagnostics['target_problem_summary']}")
+    # Step 5: Curriculum Stage Determination
+    if curriculum_stage is None:
+        # Determine stage dynamically based on baseline F1 and confusion severity
+        stage_num, stage_reason = determine_curriculum_stage(
+            history_evaluations=[base_eval_res],
+            current_f1=base_eval_res["macro_f1"],
+            confusion_severity=diagnostics.get("confused_pairs", [{}])[0].get("severity", "LOW") if diagnostics.get("confused_pairs") else "LOW"
+        )
+    else:
+        stage_num = curriculum_stage
+        stage_reason = f"Explicitly configured curriculum stage {stage_num}"
+
+    # Step 6: Synthesize Curriculum-Aware Targeted Data
+    update_status("Synthesizing Targeted Data", 60, f"Curriculum Stage {stage_num}: {stage_reason}")
     raw_targeted = generate_targeted_data(
         schema=schema,
         diagnostics=diagnostics,
         count=targeted_count,
-        target_language="English"
+        target_language="English",
+        curriculum_stage=stage_num,
+        seed=seed
     )
 
-    # Step 6: Multi-Stage Quality Filter & Deduplication
+    # Step 7: Multi-Stage Quality Filter & Deduplication
     update_status("Quality Filtering & Deduplication", 70, "Validating candidate examples against quality gates...")
     filtered_results = filter_candidate_examples(
         candidate_examples=raw_targeted,
         existing_dataset=base_data,
-        schema=schema
+        schema=schema,
+        curriculum_stage=stage_num
     )
     accepted_examples = filtered_results["accepted"]
     filter_telemetry = filtered_results["telemetry"]
 
     if not accepted_examples:
-        # Fallback: if all rejected, pass fallback candidate
-        accepted_examples = raw_targeted[:5]
+        accepted_examples = raw_targeted[:max(1, min(5, len(raw_targeted)))]
 
-    # Step 7: Create Immutable Candidate DatasetVersion N+1
+    # Step 8: Create Immutable Candidate DatasetVersion N+1
     next_version_num = (base_version.version_number or 1) + 1
     new_combined_dataset = list(base_data) + accepted_examples
 
@@ -264,8 +282,8 @@ def run_optimization_cycle(
         canonical_count=cand_canonical,
         boundary_count=cand_boundary,
         adversarial_count=cand_adversarial,
-        generated_by="targeted_optimizer_v2",
-        generation_reason=diagnostics["target_problem_summary"],
+        generated_by=f"curriculum_stage_{stage_num}",
+        generation_reason=f"{stage_reason} | {diagnostics['target_problem_summary']}",
         status="training",
         dataset_json=json.dumps(new_combined_dataset),
         schema_json=json.dumps(schema)
@@ -273,7 +291,7 @@ def run_optimization_cycle(
     db.add(cand_version)
     db.commit()
 
-    # Step 8: Retrain Classifier on Candidate Dataset
+    # Step 9: Retrain Classifier on Candidate Dataset
     update_status("Retraining Classifier on Dataset v" + str(next_version_num), 80, f"Total examples: {len(new_combined_dataset)}")
     cand_train_start = time.time()
     cand_train_dataset = train_base_dataset + accepted_examples
@@ -296,12 +314,12 @@ def run_optimization_cycle(
         training_time_seconds=cand_train_time,
         training_status="completed",
         artifact_path=cand_train_res.get("artifact_path"),
-        completed_at=datetime.datetime.utcnow()
+        completed_at=datetime.datetime.now(datetime.timezone.utc)
     )
     db.add(cand_train_run)
     db.commit()
 
-    # Step 9: Evaluate Candidate Model on the EXACT SAME Validation Set
+    # Step 10: Evaluate Candidate Model on the EXACT SAME Validation Set
     update_status("Evaluating Candidate Classifier", 90, "Evaluating candidate model against isolated validation set...")
     cand_eval_start = time.time()
     cand_eval_res = evaluate_model(cand_train_res["predictor"], val_dataset)
@@ -326,7 +344,7 @@ def run_optimization_cycle(
     db.add(cand_eval_run)
     db.commit()
 
-    # Step 10: Multi-Objective Promotion Gate
+    # Step 11: Multi-Objective Promotion Gate
     update_status("Evaluating Promotion Gate", 95, "Checking multi-objective promotion rule...")
     is_promoted, decision_rationale, metrics_diff = evaluate_promotion_gate(
         base_eval=base_eval_res,
@@ -336,7 +354,7 @@ def run_optimization_cycle(
 
     if is_promoted:
         cand_version.status = "promoted"
-        cand_version.promoted_at = datetime.datetime.utcnow()
+        cand_version.promoted_at = datetime.datetime.now(datetime.timezone.utc)
         cycle_status = "promoted"
     else:
         cand_version.status = "rejected"
@@ -344,14 +362,18 @@ def run_optimization_cycle(
 
     total_cycle_time = round(time.time() - cycle_start, 3)
 
-    # Step 11: Persist OptimizationCycle Telemetry
+    # Step 12: Persist OptimizationCycle Telemetry
     telemetry_data = {
+        "curriculum_stage": stage_num,
+        "stage_reason": stage_reason,
         "training_time_seconds": round(base_train_time + cand_train_time, 3),
         "evaluation_time_seconds": round(base_eval_time + cand_eval_time, 3),
         "total_cycle_time_seconds": total_cycle_time,
         "llm_tokens_estimated": len(raw_targeted) * 60,
         "cost_estimated_usd": f"${(len(raw_targeted) * 60 * 0.0000005):.6f}",
-        "acceptance_rate": filter_telemetry.get("acceptance_rate", 1.0)
+        "acceptance_rate": filter_telemetry.get("acceptance_rate", 1.0),
+        "anchor_coverage_ratio": filter_telemetry.get("anchor_coverage_ratio", 1.0),
+        "archetype_distribution": filter_telemetry.get("archetype_distribution", {})
     }
 
     opt_cycle = models.OptimizationCycle(
@@ -370,7 +392,7 @@ def run_optimization_cycle(
         status=cycle_status,
         rejection_reason=decision_rationale if not is_promoted else None,
         telemetry_json=json.dumps(telemetry_data),
-        completed_at=datetime.datetime.utcnow()
+        completed_at=datetime.datetime.now(datetime.timezone.utc)
     )
     db.add(opt_cycle)
     db.commit()
@@ -381,6 +403,7 @@ def run_optimization_cycle(
         "cycle_id": opt_cycle.id,
         "status": cycle_status,
         "is_promoted": is_promoted,
+        "curriculum_stage": stage_num,
         "decision_rationale": decision_rationale,
         "base_version": {
             "id": base_version.id,

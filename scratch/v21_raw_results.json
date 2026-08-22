@@ -1,0 +1,3141 @@
+{
+  "benchmark_info": {
+    "timestamp": "2026-08-22T14:32:53.308994+00:00",
+    "framework": "sklearn_fast",
+    "seeds": [
+      42,
+      123,
+      456,
+      789,
+      999
+    ],
+    "sample_sizes": [
+      50,
+      100,
+      200,
+      300,
+      500,
+      1000
+    ],
+    "holdout_size": 50,
+    "validation_size": 25,
+    "arms": {
+      "arm_a_naive": "Arm A: Naive Synthetic",
+      "arm_b_v1": "Arm B: Intentra V1 (Static)",
+      "arm_c_v2": "Arm C: Intentra V2 (Current)",
+      "arm_d_v21_curriculum": "Arm D: Intentra V2.1 Curriculum (Full)",
+      "arm_e_v21_no_boundary": "Arm E: V2.1 w/o Boundary Examples",
+      "arm_f_v21_no_hard_neg": "Arm F: V2.1 w/o Hard Negatives",
+      "arm_g_v21_no_contrastive": "Arm G: V2.1 w/o Contrastive",
+      "arm_h_v21_randomized_order": "Arm H: V2.1 Randomized Order"
+    }
+  },
+  "arms_data": {
+    "arm_a_naive": {
+      "50": {
+        "mean_macro_f1": 0.5872,
+        "std_macro_f1": 0.0406,
+        "mean_accuracy": 0.588,
+        "mean_boundary_accuracy": 0.6,
+        "mean_hard_negative_accuracy": 0.525,
+        "seed_runs_f1": [
+          0.6181,
+          0.6071,
+          0.6052,
+          0.5069,
+          0.5985
+        ],
+        "seed_runs_acc": [
+          0.62,
+          0.6,
+          0.62,
+          0.5,
+          0.6
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "3ef94224e5a820a850010a6141ec8c24426fc350522086344fe8364aaa4e76d2",
+            "macro_f1": 0.6181,
+            "accuracy": 0.62,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "7ab3916a1c5d7ffcf3330113475e3748c292baed34467a3bb9730590c90378a9",
+            "macro_f1": 0.6071,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.5952,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "32de2f3ae65f8a0e0d704b8fa3edff7113f8555cb34b887d84845bb55318ae72",
+            "macro_f1": 0.6052,
+            "accuracy": 0.62,
+            "boundary_accuracy": 0.619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "4da01ed2ead94db58cc28f10f33775c73a4325f535256db4b64d9d1edadcc04b",
+            "macro_f1": 0.5069,
+            "accuracy": 0.5,
+            "boundary_accuracy": 0.5,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "5cf78147a2a85a66b38bd980082a055b89af64979abadca0059068b99e6fc7cd",
+            "macro_f1": 0.5985,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.375
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.6722,
+        "std_macro_f1": 0.0429,
+        "mean_accuracy": 0.672,
+        "mean_boundary_accuracy": 0.7,
+        "mean_hard_negative_accuracy": 0.525,
+        "seed_runs_f1": [
+          0.6618,
+          0.7016,
+          0.7383,
+          0.6192,
+          0.6401
+        ],
+        "seed_runs_acc": [
+          0.66,
+          0.7,
+          0.74,
+          0.62,
+          0.64
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "4e9ac0e42c4a982c3721260382580e79120b5e0e9968653097f27b31cf931c14",
+            "macro_f1": 0.6618,
+            "accuracy": 0.66,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "f6a3a63ad7f2c5f41e7e2c9e87da80b1885c8cbfe3809f97ab694adf4ebec98f",
+            "macro_f1": 0.7016,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "ed5f28b4fec0f2eb102e063a26180b6a37a22bfb4ad6a95c4f9dfbddc445011e",
+            "macro_f1": 0.7383,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "c5154e943af5507775c7f62b665c7e9531020b305c7ea48dbdbf3b486920ecfa",
+            "macro_f1": 0.6192,
+            "accuracy": 0.62,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "40b4f23c62b9921507a108c535635f4c6d7032b6f70824458b7d6192704a6b9d",
+            "macro_f1": 0.6401,
+            "accuracy": 0.64,
+            "boundary_accuracy": 0.6667,
+            "hard_negative_accuracy": 0.5
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.7253,
+        "std_macro_f1": 0.0347,
+        "mean_accuracy": 0.728,
+        "mean_boundary_accuracy": 0.7476,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.6758,
+          0.7384,
+          0.7772,
+          0.7002,
+          0.7348
+        ],
+        "seed_runs_acc": [
+          0.68,
+          0.74,
+          0.78,
+          0.7,
+          0.74
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "aedf2ed687717b41c64dba3c1db5e3810722c0041cc3e95a0cb89bbd9c881025",
+            "macro_f1": 0.6758,
+            "accuracy": 0.68,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "84ff8d3e91e8e17438da38e4380ede256c2d611f99c89b4413ad4eee548b24e7",
+            "macro_f1": 0.7384,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "034887bd2903d8d8fe0ae8ff8526039d92772971cd5c47afabfaf685808fbf6c",
+            "macro_f1": 0.7772,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "b62e5c9c7a23c0a7dca564b5baf2de390871f16b55f58571076ecaec619fff75",
+            "macro_f1": 0.7002,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "72a0edea810aad0962aff14250974ad92f10ee3f3a8b303ff35896aaacbd07f9",
+            "macro_f1": 0.7348,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.7523,
+        "std_macro_f1": 0.016,
+        "mean_accuracy": 0.756,
+        "mean_boundary_accuracy": 0.7809,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.7348,
+          0.7583,
+          0.7772,
+          0.7351,
+          0.7562
+        ],
+        "seed_runs_acc": [
+          0.74,
+          0.76,
+          0.78,
+          0.74,
+          0.76
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "bf49772707e0178b352f9ca737a1c6b405234cd71264105bf82b2acc005d1f33",
+            "macro_f1": 0.7348,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "fa8d8dc469e807b6232b8d5976843f9f494220cd81361676209a16d4def812f3",
+            "macro_f1": 0.7583,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "3c052b26b10ce202818d7ad320673e5561bc5951e757848ee87cbb60e36b1105",
+            "macro_f1": 0.7772,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "e743d749a5e19c878c0356898788602b33ebdb6b7f08faa7d5c3a09e06169725",
+            "macro_f1": 0.7351,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "41e6cdbc294ae708e5328aab3a505b9dd8613ef3cf4bd0888bec4a6010da2ec3",
+            "macro_f1": 0.7562,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.7559,
+        "std_macro_f1": 0.0002,
+        "mean_accuracy": 0.76,
+        "mean_boundary_accuracy": 0.7857,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.7558,
+          0.7558,
+          0.7558,
+          0.7558,
+          0.7562
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.76,
+          0.76,
+          0.76,
+          0.76
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "36b4489da6f03f9c5698ca07627ae46858356b0d7fc40ecf50ea6a002162b0ec",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "4ff296b4c72ce89300820e638267286707d8727abe0c3e2c8b45a5ae37de9ed8",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "557862a34b40c4a402a72002599eaf38c48c67fe0f3f8b2cf0cfbc346b02052b",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "2dfb6f039ca8b064a776a6868660c2b8268ab2c799916ae601be946383e7d5d9",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "69badd08aa0d64ff01da2e0815a8335cb70314078ecf98754a08f70d04c4958d",
+            "macro_f1": 0.7562,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.7558,
+        "std_macro_f1": 0.0,
+        "mean_accuracy": 0.76,
+        "mean_boundary_accuracy": 0.7857,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.7558,
+          0.7558,
+          0.7558,
+          0.7558,
+          0.7558
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.76,
+          0.76,
+          0.76,
+          0.76
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "d6cc41f884b6c4c8b47539608d3f42bc0c2cfee3f14387598d9b12cad8b992ce",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "aeb5fe436e42b7d8e0a4bb13d6f1c9194cb513f75c795ea280098ef9d156648a",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "a46e456e4152b9f076aec7944bcc45a4bd39b222f11d525e219735feba2bb322",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "44220e4e9da49f348313434739cefadf8ba446f522c9c89a1bdacedd8f8584f0",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "0cdaf02cf837becafca55c705817ded4d7769f806ceda49e81d738f22e63c565",
+            "macro_f1": 0.7558,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      }
+    },
+    "arm_b_v1": {
+      "50": {
+        "mean_macro_f1": 0.4832,
+        "std_macro_f1": 0.0624,
+        "mean_accuracy": 0.504,
+        "mean_boundary_accuracy": 0.481,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.5181,
+          0.4854,
+          0.5528,
+          0.3677,
+          0.4922
+        ],
+        "seed_runs_acc": [
+          0.52,
+          0.5,
+          0.58,
+          0.42,
+          0.5
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "144d85d17d799a9c480770ba305c345d05726aaa63014da33bffd27d0889c862",
+            "macro_f1": 0.5181,
+            "accuracy": 0.52,
+            "boundary_accuracy": 0.5238,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "290adc6a314258544c71ae5197c9509d811a6c1527ed648f15a72e0e2510a9fa",
+            "macro_f1": 0.4854,
+            "accuracy": 0.5,
+            "boundary_accuracy": 0.4524,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "c17f6b337da0d9eca4f9ac5ba6a5fb18b3a3c46b65126a682a595fb0b3b0dcb6",
+            "macro_f1": 0.5528,
+            "accuracy": 0.58,
+            "boundary_accuracy": 0.5476,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "bc4f792ea014bb54fb805092a12f34e4d642bff570b3e5a271b7486163c3dd70",
+            "macro_f1": 0.3677,
+            "accuracy": 0.42,
+            "boundary_accuracy": 0.381,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "2beb0b742de0e017ae337ae1452b97bee5cb2ed54758f3f4ccb8e2ee2865fbd8",
+            "macro_f1": 0.4922,
+            "accuracy": 0.5,
+            "boundary_accuracy": 0.5,
+            "hard_negative_accuracy": 0.5
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.5814,
+        "std_macro_f1": 0.0208,
+        "mean_accuracy": 0.604,
+        "mean_boundary_accuracy": 0.5904,
+        "mean_hard_negative_accuracy": 0.675,
+        "seed_runs_f1": [
+          0.5579,
+          0.5806,
+          0.5653,
+          0.5851,
+          0.618
+        ],
+        "seed_runs_acc": [
+          0.58,
+          0.6,
+          0.58,
+          0.62,
+          0.64
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "9265036a0f15e6d94f045c6f8bd84dc5a44f5ac24516f60d2e61a66de5802456",
+            "macro_f1": 0.5579,
+            "accuracy": 0.58,
+            "boundary_accuracy": 0.5714,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "62a4b1055884d15bf6f6c12eda47a96f89329295fc27f92debf8d8021112f860",
+            "macro_f1": 0.5806,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.5952,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "b31c9ec19f26400b2b01ee60dc618135d591218116ec21806d2ba4accc48d79b",
+            "macro_f1": 0.5653,
+            "accuracy": 0.58,
+            "boundary_accuracy": 0.5714,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "f23acc1e86675fd6b26f75cffb1e2194e64f1529cc44408ceef800c66ba7e7b7",
+            "macro_f1": 0.5851,
+            "accuracy": 0.62,
+            "boundary_accuracy": 0.5952,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "bf8a69ee6efc8013d36c87c5762f777a07ae8178be1896050122aca2448335c8",
+            "macro_f1": 0.618,
+            "accuracy": 0.64,
+            "boundary_accuracy": 0.619,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.7214,
+        "std_macro_f1": 0.0182,
+        "mean_accuracy": 0.736,
+        "mean_boundary_accuracy": 0.7238,
+        "mean_hard_negative_accuracy": 0.8,
+        "seed_runs_f1": [
+          0.727,
+          0.7002,
+          0.747,
+          0.701,
+          0.7318
+        ],
+        "seed_runs_acc": [
+          0.74,
+          0.72,
+          0.76,
+          0.72,
+          0.74
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "36761a38e454d31afe2f38bcb28975ff1e05108f05baca77517bde0e1123cb5e",
+            "macro_f1": 0.727,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "b1cf9f44f2fc0b309ba9289b40828bab341131e36a5e18e43868931a3a2f957e",
+            "macro_f1": 0.7002,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "0fe67ec94b2778a84856d48e576382bd14765a40cc0a8cdd08ef98c3e415e1ef",
+            "macro_f1": 0.747,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "b646c949f7ff4a6fd504c41b8dc5be5cf9d0109743f7e7604837464fad884860",
+            "macro_f1": 0.701,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "381adea4d4395d7784fcf059f74b3a9195d16525ea9ce20d4520f9313ee53850",
+            "macro_f1": 0.7318,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.7598,
+        "std_macro_f1": 0.0102,
+        "mean_accuracy": 0.772,
+        "mean_boundary_accuracy": 0.7571,
+        "mean_hard_negative_accuracy": 0.85,
+        "seed_runs_f1": [
+          0.752,
+          0.7705,
+          0.7636,
+          0.744,
+          0.7688
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.78,
+          0.78,
+          0.76,
+          0.78
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "07737a5148c3bbaae78ec0d0e89f39e8c2a1e47104066508079af6e45fe926f4",
+            "macro_f1": 0.752,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "8b100c6620ca3c2a01bf2a379a518f781944e06d92cec2ae18ffedd4f13b05df",
+            "macro_f1": 0.7705,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "2d4f2711ebec96cf79e0a23878e85f9805d2f711be35c5f4be68440c18e1c2bb",
+            "macro_f1": 0.7636,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "bfab89e6a2327f2ce841402475fef6a058c8eacdb8d9aad9c8b666af676ecb9a",
+            "macro_f1": 0.744,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "7d41ec46a534fcc2e51cdeda85ddd39e99069285493276030bf68f2442cbe85b",
+            "macro_f1": 0.7688,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.7975,
+        "std_macro_f1": 0.016,
+        "mean_accuracy": 0.804,
+        "mean_boundary_accuracy": 0.7905,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8162,
+          0.7939,
+          0.8145,
+          0.7739,
+          0.7892
+        ],
+        "seed_runs_acc": [
+          0.82,
+          0.8,
+          0.82,
+          0.78,
+          0.8
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "5321643cae701d7d3565b15b76cbd9d3cf71c5715b474a8b524ee93916c9e8ef",
+            "macro_f1": 0.8162,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "a8bbc543dcc1c88a800ff77fba7afb67e8b6f06723d7a83358b01d34e2022caa",
+            "macro_f1": 0.7939,
+            "accuracy": 0.8,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "bdc6eb5975f23030a78fa085de49eb91c52d2f49839b079990ab1bf3a0d59429",
+            "macro_f1": 0.8145,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "9fe485d944c183128347f3a441f21bd8d10ee4d1b7c0564f06e2507fad7ecf8e",
+            "macro_f1": 0.7739,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "5cb1f0f080b5fd79b3ce853d5b9e7d709a3911a02b7eac6a9254a6dd0c92b24c",
+            "macro_f1": 0.7892,
+            "accuracy": 0.8,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.8108,
+        "std_macro_f1": 0.0073,
+        "mean_accuracy": 0.816,
+        "mean_boundary_accuracy": 0.8047,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8145,
+          0.7962,
+          0.8145,
+          0.8145,
+          0.8145
+        ],
+        "seed_runs_acc": [
+          0.82,
+          0.8,
+          0.82,
+          0.82,
+          0.82
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "264097da3ecedaa3c1040b84329639ac65acbc328151be7bb77240805fc1e863",
+            "macro_f1": 0.8145,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "f3ffa73b39a4abf3955d73c16c155d07d0dd0f29f3bbbb1e66af126890d34dc3",
+            "macro_f1": 0.7962,
+            "accuracy": 0.8,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "28606cd162ec80bd70ea8a1a39faab9093bde1c6c37e84b2c6638920535bee3c",
+            "macro_f1": 0.8145,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "15a7ce97f0566877a7bfbd3ebd9bb08aa0c22c0da90196e32f075652cdfc89df",
+            "macro_f1": 0.8145,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "837ada25a2deedf97803d169385fefc0874b10bf815c8a8a2b3133009aab854a",
+            "macro_f1": 0.8145,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      }
+    },
+    "arm_c_v2": {
+      "50": {
+        "mean_macro_f1": 0.2177,
+        "std_macro_f1": 0.03,
+        "mean_accuracy": 0.312,
+        "mean_boundary_accuracy": 0.3095,
+        "mean_hard_negative_accuracy": 0.325,
+        "seed_runs_f1": [
+          0.247,
+          0.1979,
+          0.1741,
+          0.215,
+          0.2545
+        ],
+        "seed_runs_acc": [
+          0.32,
+          0.28,
+          0.28,
+          0.34,
+          0.34
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "669ccc2039801a7c976a75326f1132d2e59638bc0f5b308a7d0fdeb0c2552d72",
+            "macro_f1": 0.247,
+            "accuracy": 0.32,
+            "boundary_accuracy": 0.3095,
+            "hard_negative_accuracy": 0.375
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "759e66b2aa752ea862351ee2815973797b6bab1d8190642bdff273cdbb5ed106",
+            "macro_f1": 0.1979,
+            "accuracy": 0.28,
+            "boundary_accuracy": 0.2857,
+            "hard_negative_accuracy": 0.25
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "b76d383152dc55ca404a7dbb1c519a017dedb6ed6b909c4d30c37bf0c4ea983d",
+            "macro_f1": 0.1741,
+            "accuracy": 0.28,
+            "boundary_accuracy": 0.2857,
+            "hard_negative_accuracy": 0.25
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "da0cb701799a4a57ccae8afe8d1200d00fa61cf6c8a452183e4914e336f3b866",
+            "macro_f1": 0.215,
+            "accuracy": 0.34,
+            "boundary_accuracy": 0.3333,
+            "hard_negative_accuracy": 0.375
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "21a8eab7da47761219ef6e5f4b1bdbd3124162b147de175d121a5e8f58b7f4b3",
+            "macro_f1": 0.2545,
+            "accuracy": 0.34,
+            "boundary_accuracy": 0.3333,
+            "hard_negative_accuracy": 0.375
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.3373,
+        "std_macro_f1": 0.0203,
+        "mean_accuracy": 0.408,
+        "mean_boundary_accuracy": 0.381,
+        "mean_hard_negative_accuracy": 0.55,
+        "seed_runs_f1": [
+          0.3064,
+          0.3323,
+          0.3686,
+          0.3333,
+          0.3461
+        ],
+        "seed_runs_acc": [
+          0.36,
+          0.38,
+          0.44,
+          0.42,
+          0.44
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "6757c97d9a7eb8929f283e1071acee44e84a8649e965814f79c5ae118ce97e68",
+            "macro_f1": 0.3064,
+            "accuracy": 0.36,
+            "boundary_accuracy": 0.3571,
+            "hard_negative_accuracy": 0.375
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "90e909caff59efccf1af68af45e0745d057c0d91fe785491bacdcf53c0f01a8c",
+            "macro_f1": 0.3323,
+            "accuracy": 0.38,
+            "boundary_accuracy": 0.3333,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "bc0cd6dbd92c8f29330fad872f1b61b6195ff6b4b24b2994c9efbdf8c0b94e24",
+            "macro_f1": 0.3686,
+            "accuracy": 0.44,
+            "boundary_accuracy": 0.4048,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "36dfa3fd95e5d2a9de1c1865f4e470dbd3bc9c2b53ca7d022d9bf09cb4ad2412",
+            "macro_f1": 0.3333,
+            "accuracy": 0.42,
+            "boundary_accuracy": 0.4048,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "be36e0511803903936d0773bed96c1ea5a4adba7add4ff1de837cf6a9170a888",
+            "macro_f1": 0.3461,
+            "accuracy": 0.44,
+            "boundary_accuracy": 0.4048,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.494,
+        "std_macro_f1": 0.0454,
+        "mean_accuracy": 0.556,
+        "mean_boundary_accuracy": 0.5428,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.4243,
+          0.5605,
+          0.5176,
+          0.4948,
+          0.4728
+        ],
+        "seed_runs_acc": [
+          0.5,
+          0.6,
+          0.58,
+          0.56,
+          0.54
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "5a9ea3aea15708e59f600781397b533e51a8d321db40ad14f580b1d5e8dc230a",
+            "macro_f1": 0.4243,
+            "accuracy": 0.5,
+            "boundary_accuracy": 0.5,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "afa7c99238920676c62b2eef37898b948ec16547e0cbef464553fa5c241029a0",
+            "macro_f1": 0.5605,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.5714,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "32597fb0cd47dd0549f6b758ad1f2f7bdeddba813a373bd6f2e89cdd7d1c69fb",
+            "macro_f1": 0.5176,
+            "accuracy": 0.58,
+            "boundary_accuracy": 0.5714,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "e166676be76a5f8300caddcd3821701679852893035996e9a63726daf8d16244",
+            "macro_f1": 0.4948,
+            "accuracy": 0.56,
+            "boundary_accuracy": 0.5476,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "d9adc5c6621f21fed17d32199a4f05622fcd4f0c349e8fb744341ce5839133ea",
+            "macro_f1": 0.4728,
+            "accuracy": 0.54,
+            "boundary_accuracy": 0.5238,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.5398,
+        "std_macro_f1": 0.0624,
+        "mean_accuracy": 0.588,
+        "mean_boundary_accuracy": 0.5809,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.4322,
+          0.622,
+          0.5608,
+          0.5234,
+          0.5605
+        ],
+        "seed_runs_acc": [
+          0.52,
+          0.64,
+          0.6,
+          0.58,
+          0.6
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "854313ef3714268e53c5f6d0e6f66ad40ddc4d93f05de3c63d0d47f90a67fed7",
+            "macro_f1": 0.4322,
+            "accuracy": 0.52,
+            "boundary_accuracy": 0.5,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "cd8867015ce496c1d2068057c2ad1c4e697357cbf742826c9fbf655e981205fa",
+            "macro_f1": 0.622,
+            "accuracy": 0.64,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "60e29d7ac726826e9919042d649a750bc7feb25e95e282932bb40012f1ed318e",
+            "macro_f1": 0.5608,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.5952,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "3b7854b39fd1cdf443de644a363af685707e87507ecb90bd911304d244a241d5",
+            "macro_f1": 0.5234,
+            "accuracy": 0.58,
+            "boundary_accuracy": 0.5714,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "94b07fb9a33c205e674c608769a6309fc1a68c29420d0988e8ccf568a84839ee",
+            "macro_f1": 0.5605,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.5952,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.6663,
+        "std_macro_f1": 0.0186,
+        "mean_accuracy": 0.676,
+        "mean_boundary_accuracy": 0.6857,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.6905,
+          0.6484,
+          0.6444,
+          0.6638,
+          0.6846
+        ],
+        "seed_runs_acc": [
+          0.7,
+          0.66,
+          0.66,
+          0.68,
+          0.68
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "e122b2221cfbc9a063e1698465fd5b114984f02c4d3638a32888d0f5dc91c560",
+            "macro_f1": 0.6905,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "c6f211a63f493f9e4387cdd52ae939943e60e63e39d78a564a4335f87bc5a46e",
+            "macro_f1": 0.6484,
+            "accuracy": 0.66,
+            "boundary_accuracy": 0.6667,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "4f2960d672fe6710e4301e5236bc6d506644a8f65c7240fded8f4e59ea2c6060",
+            "macro_f1": 0.6444,
+            "accuracy": 0.66,
+            "boundary_accuracy": 0.6667,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "7975d56cc7c071f34b24ccc0c7d186a43fd308a96d1d32a3c2cbac51d27bb602",
+            "macro_f1": 0.6638,
+            "accuracy": 0.68,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "1a3b8f97f81768ae5184b11847972ea42748d0fc6acd559ad790585ea805cc23",
+            "macro_f1": 0.6846,
+            "accuracy": 0.68,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.7278,
+        "std_macro_f1": 0.0145,
+        "mean_accuracy": 0.732,
+        "mean_boundary_accuracy": 0.7476,
+        "mean_hard_negative_accuracy": 0.65,
+        "seed_runs_f1": [
+          0.7386,
+          0.7226,
+          0.7503,
+          0.7158,
+          0.7117
+        ],
+        "seed_runs_acc": [
+          0.74,
+          0.72,
+          0.76,
+          0.72,
+          0.72
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "9f0e6344169fba11946dc0569378673fc6adc9093a08c9d83ce819beb6c9fb47",
+            "macro_f1": 0.7386,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "fe3771a4f2722788561b1887a77bcce343e4e7a81b5f9fcf9d71070508533723",
+            "macro_f1": 0.7226,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "f468504c0c3a5e364952b399fa43e8d13234b338fafdfa6d82dc21e6fcb4d7c9",
+            "macro_f1": 0.7503,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "8e8b5439704a352ff908ec219d4c55228525d4a5e89c176701579dadd23d4069",
+            "macro_f1": 0.7158,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "62cb4fd384b62ff50b2afebf329e3f7a9d4848065bfb035ec8e6e25d7127ab62",
+            "macro_f1": 0.7117,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      }
+    },
+    "arm_d_v21_curriculum": {
+      "50": {
+        "mean_macro_f1": 0.6396,
+        "std_macro_f1": 0.0765,
+        "mean_accuracy": 0.644,
+        "mean_boundary_accuracy": 0.6571,
+        "mean_hard_negative_accuracy": 0.575,
+        "seed_runs_f1": [
+          0.7559,
+          0.6222,
+          0.6925,
+          0.5395,
+          0.5881
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.62,
+          0.7,
+          0.54,
+          0.6
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "1495416a94ea7d03d20591b556f3ad7f8a3747ae014f7338396a3725981499b1",
+            "macro_f1": 0.7559,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "0d59e3e0a925dfd70126a77295055a927b95698fb359511875da65aa739d9ec9",
+            "macro_f1": 0.6222,
+            "accuracy": 0.62,
+            "boundary_accuracy": 0.619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "bd10241b6a2bbed2b21f4640529c054ece997399e13c4c9af17e79ae6a36c3bb",
+            "macro_f1": 0.6925,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "84444e90f2f8d9084ac8837c0c3bed6988513003fd83f7cc409b505fd5240ea7",
+            "macro_f1": 0.5395,
+            "accuracy": 0.54,
+            "boundary_accuracy": 0.5476,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "48a805f14fcbe25a1b89ba73d2988b9c6cc7d972061d2747848bd4d114d85552",
+            "macro_f1": 0.5881,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.375
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.7864,
+        "std_macro_f1": 0.0525,
+        "mean_accuracy": 0.788,
+        "mean_boundary_accuracy": 0.7952,
+        "mean_hard_negative_accuracy": 0.75,
+        "seed_runs_f1": [
+          0.8231,
+          0.6994,
+          0.8188,
+          0.7525,
+          0.8381
+        ],
+        "seed_runs_acc": [
+          0.82,
+          0.7,
+          0.82,
+          0.76,
+          0.84
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "b7930982445c94ecc48c0bd0184ec4b2f6d7b20f61f794f298a800de15c9a8c6",
+            "macro_f1": 0.8231,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "511cd6b99199cace25a3608149e5995a8ad90616c4268b36b6cbd05b1f1edc01",
+            "macro_f1": 0.6994,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "efee00ac729bce47610b3b5f56b08d27e96934dd9889bf021eee3a81ae13101f",
+            "macro_f1": 0.8188,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "ee7b10301d31fe725f98b341375dd258a0d93dc500f2dfb38458df096bf361ce",
+            "macro_f1": 0.7525,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "5f8ef40e66c5b4c7c4987e9e1a771acaac79186c370ae7cc688fc35460e1377d",
+            "macro_f1": 0.8381,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.8588,
+        "std_macro_f1": 0.0353,
+        "mean_accuracy": 0.86,
+        "mean_boundary_accuracy": 0.8572,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.9013,
+          0.8174,
+          0.8797,
+          0.8159,
+          0.8798
+        ],
+        "seed_runs_acc": [
+          0.9,
+          0.82,
+          0.88,
+          0.82,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "7887a5fcc0b696064b52b98e5f6d14604e54cea05047027373969e694d67615c",
+            "macro_f1": 0.9013,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "854f9ab2a3c02675dddba4847ed40a1186104638c692cbab9a3b1eabd54fed6d",
+            "macro_f1": 0.8174,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "9393e265690e1600ead93a33ac012a4f43810b7d238d9d770dc6946ba4d0d883",
+            "macro_f1": 0.8797,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "cbc65f87c070b443d9b9fca5bd8b19d5a5536d5e28f0d1cbe8dcd2664377e58a",
+            "macro_f1": 0.8159,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "224d78fcd9457db4e7bb5a28556fcf020da96156a556708f8d6658eedc90cb97",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.8833,
+        "std_macro_f1": 0.0075,
+        "mean_accuracy": 0.884,
+        "mean_boundary_accuracy": 0.8858,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8798,
+          0.8789,
+          0.8983,
+          0.8798,
+          0.8798
+        ],
+        "seed_runs_acc": [
+          0.88,
+          0.88,
+          0.9,
+          0.88,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "618d06393d023b0d20ddb58f09637d813d222791bceff8c0b955ffec0aea2227",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "879ecfe5940f2aa0c73160d0f2048bae908acdcdbf63ef2a6042bfd2932c161c",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "f0e4c47154c08ac98951b334f833f48c7070f4489e9d61d314e76164fc1959c0",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "bcc7d945c30c2987cf84abb382b0eda4e1ed0d0e24311fa8a4012e2dee6eaa45",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "c304657934c7fbf4d11b33abe62c95f0e92b0565a52be80b2c847bdfa0480639",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.8904,
+        "std_macro_f1": 0.0166,
+        "mean_accuracy": 0.892,
+        "mean_boundary_accuracy": 0.8953,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8983,
+          0.9197,
+          0.8787,
+          0.8771,
+          0.8783
+        ],
+        "seed_runs_acc": [
+          0.9,
+          0.92,
+          0.88,
+          0.88,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "5461d2ddcd6142f781db200be0868e4e9b4701923d64e634a03ab375d2bc1f11",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "c46a965803496bd1cb1419515442b2a7fc5b1724ece6f58287f3b50179dcae21",
+            "macro_f1": 0.9197,
+            "accuracy": 0.92,
+            "boundary_accuracy": 0.9286,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "cd8eacfa945611a7851f22b898edbd439599a23f2f5fc6b4f0555b1023d052b6",
+            "macro_f1": 0.8787,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "85e6832593ad4e2d633e7e957c4519dcc9599cec2ea196ebfc014166c82dc354",
+            "macro_f1": 0.8771,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "c3b2aa53c034772ec98273be4104c17c1e11fe54ebc77b047c1433ae6ca1fab1",
+            "macro_f1": 0.8783,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.8983,
+        "std_macro_f1": 0.0,
+        "mean_accuracy": 0.9,
+        "mean_boundary_accuracy": 0.9048,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8983,
+          0.8983,
+          0.8983,
+          0.8983,
+          0.8983
+        ],
+        "seed_runs_acc": [
+          0.9,
+          0.9,
+          0.9,
+          0.9,
+          0.9
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "27be27da92aefd23ac976d5d9847fa12517db18e76183e6496558e3e5d169386",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "f4aa82343b77a2cdf3cdc13db37103be36525962399fd1dd45947f8b01833270",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "156c72a9e3039534ad31f804b243825fa06023d70918357ec977efe1279195e9",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "d2b603e8113ae43316012f0243d9869ee87db86c9ca01143eda73c13f88e86ae",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "bf860648db4d037e6d774bd4c74d35bc86241820822d3152cc5656ae2388ec83",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      }
+    },
+    "arm_e_v21_no_boundary": {
+      "50": {
+        "mean_macro_f1": 0.6344,
+        "std_macro_f1": 0.0739,
+        "mean_accuracy": 0.636,
+        "mean_boundary_accuracy": 0.6381,
+        "mean_hard_negative_accuracy": 0.625,
+        "seed_runs_f1": [
+          0.7027,
+          0.6608,
+          0.6774,
+          0.4928,
+          0.6381
+        ],
+        "seed_runs_acc": [
+          0.7,
+          0.66,
+          0.68,
+          0.5,
+          0.64
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "01c9997cdc742342ee6a35999dc009df5e2db72e287f22138a346adf72213a0f",
+            "macro_f1": 0.7027,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "252537ad16664c8fdbfc31746edc7f074cfe030ade34ff8fe1e7c5bc453eaf75",
+            "macro_f1": 0.6608,
+            "accuracy": 0.66,
+            "boundary_accuracy": 0.6667,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "fb0d1682de6bf5ab93f7ae85f7d483fccda18850680e84863db55ac276f79b14",
+            "macro_f1": 0.6774,
+            "accuracy": 0.68,
+            "boundary_accuracy": 0.6667,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "bf33cb1cbf7372d7e83c5129ecf7791055ed4e2783e08bbb8d68f0809e4d96bf",
+            "macro_f1": 0.4928,
+            "accuracy": 0.5,
+            "boundary_accuracy": 0.5,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "2973838f22f52e811001b0b7c43e261e32a90908da0fe41316560058578e4384",
+            "macro_f1": 0.6381,
+            "accuracy": 0.64,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.7045,
+        "std_macro_f1": 0.0198,
+        "mean_accuracy": 0.708,
+        "mean_boundary_accuracy": 0.7191,
+        "mean_hard_negative_accuracy": 0.65,
+        "seed_runs_f1": [
+          0.6994,
+          0.6795,
+          0.6935,
+          0.7119,
+          0.7382
+        ],
+        "seed_runs_acc": [
+          0.7,
+          0.68,
+          0.7,
+          0.72,
+          0.74
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "93d44a16642b1a4bb284efd16309e6da20490e6de25c22a5d6c36b930127aa01",
+            "macro_f1": 0.6994,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "3d0f04d89a9bc10698bc8d2f5b9e7afa46134c5ac378ee6f38c48f1ef722baf5",
+            "macro_f1": 0.6795,
+            "accuracy": 0.68,
+            "boundary_accuracy": 0.6667,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "ef2a6f3fcb0862180f2a5b27188fa442b387472e64daf5a8150ef4668257d771",
+            "macro_f1": 0.6935,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "a151876cd30202d4f3e199d3532890a543c9db9a7f2406b0343069dc25e751da",
+            "macro_f1": 0.7119,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "a5fabf5deb65f80202c8be6dd07a08ea5a490fca843b57f44a33bb5eb1476268",
+            "macro_f1": 0.7382,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.7173,
+        "std_macro_f1": 0.0276,
+        "mean_accuracy": 0.72,
+        "mean_boundary_accuracy": 0.7286,
+        "mean_hard_negative_accuracy": 0.675,
+        "seed_runs_f1": [
+          0.7562,
+          0.6789,
+          0.7377,
+          0.7164,
+          0.6973
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.68,
+          0.74,
+          0.72,
+          0.7
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "a1a00868df069ddae464763aceb9e103bf63fe16f43a56be1d5bae46e72ea27a",
+            "macro_f1": 0.7562,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "e43aad633380e3fd5d46394ba2b6efa1ff8c580dabc9262ce633698bc92291df",
+            "macro_f1": 0.6789,
+            "accuracy": 0.68,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "04e9aeaea4032d394d130de79d101b642773fe47e6f6969b0b4b20d9deb34e12",
+            "macro_f1": 0.7377,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "b05e705bad1e155b2683ea2c2c1db3e4188aff242b933d6e8e3c2202ea29dfc1",
+            "macro_f1": 0.7164,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "81dd1f3a6f67dd74296577bc42fb854fd35cd9c7a8bd898a81ed3da3e6eb29a9",
+            "macro_f1": 0.6973,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.7522,
+        "std_macro_f1": 0.0244,
+        "mean_accuracy": 0.756,
+        "mean_boundary_accuracy": 0.7619,
+        "mean_hard_negative_accuracy": 0.725,
+        "seed_runs_f1": [
+          0.7772,
+          0.714,
+          0.7364,
+          0.7562,
+          0.7774
+        ],
+        "seed_runs_acc": [
+          0.78,
+          0.72,
+          0.74,
+          0.76,
+          0.78
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "2616417e5900eaedb7b5cab6bc265a410b0098c84aad93f92cf4934e80c7413d",
+            "macro_f1": 0.7772,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "afcb361e2cef1c96c55b80e49f9e6051dc1d3357b9981ab13f2f4f1931292a7e",
+            "macro_f1": 0.714,
+            "accuracy": 0.72,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "e5cf166b98299c76ded98c00f3b640404ef3976029fd5a9ab6e151790b3b6e66",
+            "macro_f1": 0.7364,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "95f488503e0d4a0ffbcf086924b797509565233e0af269c55f1c285278213957",
+            "macro_f1": 0.7562,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "9ba3039465951993cdb27715f55fd6c2dbdf6037fd24e7d3585914a0f9bc7294",
+            "macro_f1": 0.7774,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.7483,
+        "std_macro_f1": 0.0099,
+        "mean_accuracy": 0.752,
+        "mean_boundary_accuracy": 0.7524,
+        "mean_hard_negative_accuracy": 0.75,
+        "seed_runs_f1": [
+          0.7562,
+          0.7377,
+          0.7565,
+          0.7348,
+          0.7562
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.74,
+          0.76,
+          0.74,
+          0.76
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "8f807d362875b5c5220d422605b46bf34285940cc9cb696612a3287b8b9b2f15",
+            "macro_f1": 0.7562,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "841105f1623a7a45907127fa57a60033b2a3415cd95fd27556e9e6bf16ad772c",
+            "macro_f1": 0.7377,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "5c319af9c214e6f9a51d7d38ff749be6dff6b97902ac29af0eef80d8c8748f8e",
+            "macro_f1": 0.7565,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "32d53c42896a3c75db46a90670a97fa4dcf637dc3078919510b28abba7acea19",
+            "macro_f1": 0.7348,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "c04bb5f9eee6d47a93d9687d9f3ea676c1d9a9ff477e83c5588a5eeb6ce82ea8",
+            "macro_f1": 0.7562,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.7428,
+        "std_macro_f1": 0.0098,
+        "mean_accuracy": 0.748,
+        "mean_boundary_accuracy": 0.7476,
+        "mean_hard_negative_accuracy": 0.75,
+        "seed_runs_f1": [
+          0.7549,
+          0.7348,
+          0.7348,
+          0.7348,
+          0.7549
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.74,
+          0.74,
+          0.74,
+          0.76
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "dfcf86e873c00b895bc67dd52f7326c568b80c93951db9004baedb41af6a97e6",
+            "macro_f1": 0.7549,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "38b93e84af21e460cfbb03918d52d3f2f9b8e90b3a892be60c0184d00d99fd15",
+            "macro_f1": 0.7348,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "590b161a4df68f2d6bbe4fbb089c81457c1d974e7fcb24b43209a420b27c706f",
+            "macro_f1": 0.7348,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "47f56bc56d4b2dbac2f3e486bf0eca54cd4aa419a9e63fa695a9c0cbc4056c27",
+            "macro_f1": 0.7348,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "84af674543cb2ab91e98cb845b2e349b1b2802c4bac02b892ae3e864b55deb50",
+            "macro_f1": 0.7549,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      }
+    },
+    "arm_f_v21_no_hard_neg": {
+      "50": {
+        "mean_macro_f1": 0.7295,
+        "std_macro_f1": 0.0666,
+        "mean_accuracy": 0.732,
+        "mean_boundary_accuracy": 0.7333,
+        "mean_hard_negative_accuracy": 0.725,
+        "seed_runs_f1": [
+          0.8165,
+          0.6762,
+          0.7815,
+          0.6349,
+          0.7386
+        ],
+        "seed_runs_acc": [
+          0.82,
+          0.68,
+          0.78,
+          0.64,
+          0.74
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "6b38598faf205651d88e7c0b916ad50045136202f514d4862b8118c8de05d92a",
+            "macro_f1": 0.8165,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "aabf19845a47e2027ad9acff1b8822c89cb88443035c3b2656390abb15f3416a",
+            "macro_f1": 0.6762,
+            "accuracy": 0.68,
+            "boundary_accuracy": 0.6667,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "f91cbe09603f866983f3bb26fb3db15e8a99443458528cc7059c89628b6851dc",
+            "macro_f1": 0.7815,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "debf1cec3c7a73551795ae2022b34327ce76227118db198ccdb5b7b54540ccb6",
+            "macro_f1": 0.6349,
+            "accuracy": 0.64,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "c700dad290b97f4763f0d904f84a1cfa786501d64413c7def2d4b8fe5c5953ec",
+            "macro_f1": 0.7386,
+            "accuracy": 0.74,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.8151,
+        "std_macro_f1": 0.0429,
+        "mean_accuracy": 0.816,
+        "mean_boundary_accuracy": 0.8143,
+        "mean_hard_negative_accuracy": 0.825,
+        "seed_runs_f1": [
+          0.7771,
+          0.7606,
+          0.8183,
+          0.8797,
+          0.8399
+        ],
+        "seed_runs_acc": [
+          0.78,
+          0.76,
+          0.82,
+          0.88,
+          0.84
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "73ee3ce5eacee6a5b20df2cb85692077a87ab5ac6e70e11be30e672671d7b565",
+            "macro_f1": 0.7771,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "b7461936b50da50bf776168ca46c368d628d5b7f6c8312e094fe92c7bde54403",
+            "macro_f1": 0.7606,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "86ef500f29f8aa3821c5a51ff05e183aba28518dca1ee90bd0276e5d94d3c988",
+            "macro_f1": 0.8183,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "112a4cb3b483937ef6f04b896f1ee8fd201866492323bb823ac6f414f7457dfb",
+            "macro_f1": 0.8797,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 1.0
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "a420690f60888c0048d3d3d6f13e59dc1003e1dfa59f0b216e2f130e74fc9581",
+            "macro_f1": 0.8399,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.8467,
+        "std_macro_f1": 0.0167,
+        "mean_accuracy": 0.848,
+        "mean_boundary_accuracy": 0.8428,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8587,
+          0.8185,
+          0.8609,
+          0.8587,
+          0.8365
+        ],
+        "seed_runs_acc": [
+          0.86,
+          0.82,
+          0.86,
+          0.86,
+          0.84
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "0020082904ceba5be7b0e74d9ea940a9f6162014b7b00d80a9568605c509d330",
+            "macro_f1": 0.8587,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "261736f06be1b11a7c7446ff4e39d8be34916d29aec8bcd19074c2aed79a490a",
+            "macro_f1": 0.8185,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "6b766861f411ccfcdc18c911282080f7a3e6712b27f99fbe9fd440a8ac55e4e6",
+            "macro_f1": 0.8609,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "c82759b46d610f71c0c2a25577c39de6f2beb30051b00b8065d41297a31e3055",
+            "macro_f1": 0.8587,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "98afb2573bf3c261f747a1bcf3f4dec94438240bbb261df4caf695309e2d8481",
+            "macro_f1": 0.8365,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.8798,
+        "std_macro_f1": 0.0125,
+        "mean_accuracy": 0.88,
+        "mean_boundary_accuracy": 0.881,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8798,
+          0.8823,
+          0.8983,
+          0.8589,
+          0.8798
+        ],
+        "seed_runs_acc": [
+          0.88,
+          0.88,
+          0.9,
+          0.86,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "d7305685e83e9116a7841373865557d9e3d500269a7dfdbd1f7cabe403e899a3",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "79524574bac91b3490927bf9082a5b174372060cfeeb10c9214302d21dc39fbb",
+            "macro_f1": 0.8823,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "c1eec15e6f1d22df335a0173d6bf78f8c9b2b30a2a0c69eef26a366d8e34eb07",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "3e4920fd026f5a8f7d1f55f61646f4b2ed18327218d837990b18314eb5b6188d",
+            "macro_f1": 0.8589,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "c32e379a83cf62a7464640fad175a5d7431c2104d5350af88721c95a331bad43",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.8824,
+        "std_macro_f1": 0.015,
+        "mean_accuracy": 0.884,
+        "mean_boundary_accuracy": 0.8857,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8789,
+          0.8787,
+          0.8983,
+          0.8579,
+          0.8983
+        ],
+        "seed_runs_acc": [
+          0.88,
+          0.88,
+          0.9,
+          0.86,
+          0.9
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "544654dbaab2bb7060ffc5b82bbead392b8e54fcc4b14181fb5ac2e1d08d1fca",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "4d20e3531077f838afdcb2d0f70b77cd03965e6b20f4b35a869ce6ab40d50ac2",
+            "macro_f1": 0.8787,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "a938422d69f589ed399d0134a4ede035e0ff61d7485200533cb08a9e180006b8",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "75c67d653dee5eae9a863b06f0a02e6e95de1f9523553bbfc751a4c5d125200b",
+            "macro_f1": 0.8579,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "b71cd6a366f246f7afe5c1a1c9f17f749e1f66948eb53cc169c98c3962957352",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.8973,
+        "std_macro_f1": 0.0,
+        "mean_accuracy": 0.9,
+        "mean_boundary_accuracy": 0.9048,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8973,
+          0.8973,
+          0.8973,
+          0.8973,
+          0.8973
+        ],
+        "seed_runs_acc": [
+          0.9,
+          0.9,
+          0.9,
+          0.9,
+          0.9
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "48088a2329a6f9d8a0137bd9cb61254b032528913d1e9abaffda5d76be2a9ce2",
+            "macro_f1": 0.8973,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "1e0b9362b1413d3a370811572efa9b48806d27c1302b943d61ed918e6f58620f",
+            "macro_f1": 0.8973,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "dc67d0f3d78679db7066a8628a56feffcc47dbe45eb279f2f18924785db1eb09",
+            "macro_f1": 0.8973,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "1bb476912d078e8f6e9dcc411df3e90a037c9b0e07f254dd5f680225c35c9e0b",
+            "macro_f1": 0.8973,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "6ac2a8752e4bfe8add638322ebb6be27561f61a0ceb6c4b91687b2f7cc354e6e",
+            "macro_f1": 0.8973,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      }
+    },
+    "arm_g_v21_no_contrastive": {
+      "50": {
+        "mean_macro_f1": 0.6396,
+        "std_macro_f1": 0.0765,
+        "mean_accuracy": 0.644,
+        "mean_boundary_accuracy": 0.6571,
+        "mean_hard_negative_accuracy": 0.575,
+        "seed_runs_f1": [
+          0.7559,
+          0.6222,
+          0.6925,
+          0.5395,
+          0.5881
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.62,
+          0.7,
+          0.54,
+          0.6
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "1495416a94ea7d03d20591b556f3ad7f8a3747ae014f7338396a3725981499b1",
+            "macro_f1": 0.7559,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "0d59e3e0a925dfd70126a77295055a927b95698fb359511875da65aa739d9ec9",
+            "macro_f1": 0.6222,
+            "accuracy": 0.62,
+            "boundary_accuracy": 0.619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "bd10241b6a2bbed2b21f4640529c054ece997399e13c4c9af17e79ae6a36c3bb",
+            "macro_f1": 0.6925,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "84444e90f2f8d9084ac8837c0c3bed6988513003fd83f7cc409b505fd5240ea7",
+            "macro_f1": 0.5395,
+            "accuracy": 0.54,
+            "boundary_accuracy": 0.5476,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "48a805f14fcbe25a1b89ba73d2988b9c6cc7d972061d2747848bd4d114d85552",
+            "macro_f1": 0.5881,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.375
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.7864,
+        "std_macro_f1": 0.0525,
+        "mean_accuracy": 0.788,
+        "mean_boundary_accuracy": 0.7952,
+        "mean_hard_negative_accuracy": 0.75,
+        "seed_runs_f1": [
+          0.8231,
+          0.6994,
+          0.8188,
+          0.7525,
+          0.8381
+        ],
+        "seed_runs_acc": [
+          0.82,
+          0.7,
+          0.82,
+          0.76,
+          0.84
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "b7930982445c94ecc48c0bd0184ec4b2f6d7b20f61f794f298a800de15c9a8c6",
+            "macro_f1": 0.8231,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "511cd6b99199cace25a3608149e5995a8ad90616c4268b36b6cbd05b1f1edc01",
+            "macro_f1": 0.6994,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "efee00ac729bce47610b3b5f56b08d27e96934dd9889bf021eee3a81ae13101f",
+            "macro_f1": 0.8188,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "ee7b10301d31fe725f98b341375dd258a0d93dc500f2dfb38458df096bf361ce",
+            "macro_f1": 0.7525,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "5f8ef40e66c5b4c7c4987e9e1a771acaac79186c370ae7cc688fc35460e1377d",
+            "macro_f1": 0.8381,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.8357,
+        "std_macro_f1": 0.0339,
+        "mean_accuracy": 0.836,
+        "mean_boundary_accuracy": 0.8381,
+        "mean_hard_negative_accuracy": 0.825,
+        "seed_runs_f1": [
+          0.7816,
+          0.8805,
+          0.8193,
+          0.8381,
+          0.8588
+        ],
+        "seed_runs_acc": [
+          0.78,
+          0.88,
+          0.82,
+          0.84,
+          0.86
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "76eced7eebecce588511b7fa7c4c0ac64f34e5c94466413a1ab4891e3440038b",
+            "macro_f1": 0.7816,
+            "accuracy": 0.78,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "13211ba9de685c6538ece9026538718b51c4e97cd87a41c8463b0c00b1b97fcf",
+            "macro_f1": 0.8805,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "5b07429909b7670462c08eaa8f60b9bfeb2a058206fee468cfa880bbb537cfe1",
+            "macro_f1": 0.8193,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "e953857984c22b64f8acdd58a95182af92291e9af36b81d6720fdbd26d49006c",
+            "macro_f1": 0.8381,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "f9fb105be7b77e8fe61147aba508dda083f7022c729db077e02ebf73b6a9f9c3",
+            "macro_f1": 0.8588,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.8428,
+        "std_macro_f1": 0.0265,
+        "mean_accuracy": 0.844,
+        "mean_boundary_accuracy": 0.8428,
+        "mean_hard_negative_accuracy": 0.85,
+        "seed_runs_f1": [
+          0.8789,
+          0.8365,
+          0.8398,
+          0.8592,
+          0.7994
+        ],
+        "seed_runs_acc": [
+          0.88,
+          0.84,
+          0.84,
+          0.86,
+          0.8
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "3e21ecfa839d61904dac56445582adf8828828b6f4e7dd87cb10f10c989028e0",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "b374bc0c575c12f4aed858d6b31dd7150cee97e3d6e4c7e6a8c03162d1d1f8c6",
+            "macro_f1": 0.8365,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "15d18fa671730800668c24e31389f609b564a2971703f0c1345ce95e3164fd76",
+            "macro_f1": 0.8398,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "1c811a44b238bd17eed9a3f3961a66cf171e3c13b4b0893052b5813340184437",
+            "macro_f1": 0.8592,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "d144ab0cefcb769772f3e8fe77c92ec2131eddfb8afc520547cdf93109b1b2d9",
+            "macro_f1": 0.7994,
+            "accuracy": 0.8,
+            "boundary_accuracy": 0.7857,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.8665,
+        "std_macro_f1": 0.0164,
+        "mean_accuracy": 0.868,
+        "mean_boundary_accuracy": 0.8667,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8579,
+          0.8789,
+          0.8789,
+          0.8381,
+          0.8789
+        ],
+        "seed_runs_acc": [
+          0.86,
+          0.88,
+          0.88,
+          0.84,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "93c204907bf27466a9ff231226666a93fa36599f1b7925a17a185075ad2998e4",
+            "macro_f1": 0.8579,
+            "accuracy": 0.86,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "05c91e0b1c4a3e238a7156933561336701f0f0838f5ad5f5a539a38e15599c17",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "edf87e8ffa8d3e788ad6014f9d36b7adbf4941a2eda78dc486b2d8c0f2243b31",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "69b857af1cf805f0807b0550c2f12ecfc1a1fb83bacf5daeb1ab83e40e34d398",
+            "macro_f1": 0.8381,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "2635a0974b04021b9b1d4bd5e96fb13e7cb6cef8b86eef5e5a783a59d99dadc6",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.8789,
+        "std_macro_f1": 0.0,
+        "mean_accuracy": 0.88,
+        "mean_boundary_accuracy": 0.881,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8789,
+          0.8789,
+          0.8789,
+          0.8789,
+          0.8789
+        ],
+        "seed_runs_acc": [
+          0.88,
+          0.88,
+          0.88,
+          0.88,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "f3383fccc3572ea23807cecf3cc1add91e68176c437499189972c1d5f4988736",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "a6781347897f0931518efb1ff6a6d4cd15554091251ebcdbf4a54b2fe79d786f",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "30d0f636d0e7fa1188a03c94701d1ca437038df617cc8f396264ff7542c74963",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "dd21e7ec2068b5ce19b920acb149dc5d5466f92186003d489bcdf78e7edf4f73",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "31881232b5b7ac5ba476f91716f9a7106e4e86126348804875efe0e7f6da65cc",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      }
+    },
+    "arm_h_v21_randomized_order": {
+      "50": {
+        "mean_macro_f1": 0.6396,
+        "std_macro_f1": 0.0765,
+        "mean_accuracy": 0.644,
+        "mean_boundary_accuracy": 0.6571,
+        "mean_hard_negative_accuracy": 0.575,
+        "seed_runs_f1": [
+          0.7559,
+          0.6222,
+          0.6925,
+          0.5395,
+          0.5881
+        ],
+        "seed_runs_acc": [
+          0.76,
+          0.62,
+          0.7,
+          0.54,
+          0.6
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "dde831a55eadcf45d4d9fc3849bd383ff286cf25e14b9d3aa7e2ede54335739a",
+            "macro_f1": 0.7559,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7619,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "85c6f68e5176cf14d5115a034c4600c919786de5e37ff480d47322b56fe1e3fa",
+            "macro_f1": 0.6222,
+            "accuracy": 0.62,
+            "boundary_accuracy": 0.619,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "4d1adfa415eba6266a74b4f5da3e49386ec1a23ebf78e3feb31e58eb4af683f2",
+            "macro_f1": 0.6925,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.7143,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "f65f7a5714ed3d83eb917ad554cf0b438ecaadc8711fc2bc9bcd35040a71e87e",
+            "macro_f1": 0.5395,
+            "accuracy": 0.54,
+            "boundary_accuracy": 0.5476,
+            "hard_negative_accuracy": 0.5
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "25950f59b0173838f887bcd3880524beaf029fecb4131bb2887bff4a6c864e2e",
+            "macro_f1": 0.5881,
+            "accuracy": 0.6,
+            "boundary_accuracy": 0.6429,
+            "hard_negative_accuracy": 0.375
+          }
+        ]
+      },
+      "100": {
+        "mean_macro_f1": 0.7864,
+        "std_macro_f1": 0.0525,
+        "mean_accuracy": 0.788,
+        "mean_boundary_accuracy": 0.7952,
+        "mean_hard_negative_accuracy": 0.75,
+        "seed_runs_f1": [
+          0.8231,
+          0.6994,
+          0.8188,
+          0.7525,
+          0.8381
+        ],
+        "seed_runs_acc": [
+          0.82,
+          0.7,
+          0.82,
+          0.76,
+          0.84
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "66c9684e7b0e65c6ef9aac92319ee26e163b51dd22b7b806b738c16e947644d8",
+            "macro_f1": 0.8231,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.625
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "30e28e39432709c285352bbee999b54cb497dc947a94a29db20e7ba22f75e14e",
+            "macro_f1": 0.6994,
+            "accuracy": 0.7,
+            "boundary_accuracy": 0.6905,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "e3b3dd9d917d0b323d905724f0556cf6ddf2ac14f7d65144018fd6c6dcafd7b6",
+            "macro_f1": 0.8188,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8333,
+            "hard_negative_accuracy": 0.75
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "30c0f4cb91be11522d9060be20324a8959c78cd96a9d9d063266101a6e945c8d",
+            "macro_f1": 0.7525,
+            "accuracy": 0.76,
+            "boundary_accuracy": 0.7381,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "f1dc2f8f645b029300d2e740eb4d7253a67fed46e82e559e0852e98088ddd38c",
+            "macro_f1": 0.8381,
+            "accuracy": 0.84,
+            "boundary_accuracy": 0.8571,
+            "hard_negative_accuracy": 0.75
+          }
+        ]
+      },
+      "200": {
+        "mean_macro_f1": 0.8588,
+        "std_macro_f1": 0.0353,
+        "mean_accuracy": 0.86,
+        "mean_boundary_accuracy": 0.8572,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.9013,
+          0.8174,
+          0.8797,
+          0.8159,
+          0.8798
+        ],
+        "seed_runs_acc": [
+          0.9,
+          0.82,
+          0.88,
+          0.82,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "93ba5d7b5e982c2586708692ed26d1e62df0df6e9cd8a7c34d6a033a04796901",
+            "macro_f1": 0.9013,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "e1629c5be494ed7de19069cbe9dd4436e4d69edb1baa442e5edf32fc764b3fc5",
+            "macro_f1": 0.8174,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "d8158902a94c9495d90903510dbabf45147b73486a2f6e5cf56c6204e2c37a0b",
+            "macro_f1": 0.8797,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "2f719bf3aaba1fda4e3b64ad24808cf8c9467932fd05a05df80013c47a17af0a",
+            "macro_f1": 0.8159,
+            "accuracy": 0.82,
+            "boundary_accuracy": 0.8095,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "c8dd31538bfc99c81049e39dc7e5b653d4f43e666cb34d34842cc4bab01370ba",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "300": {
+        "mean_macro_f1": 0.8833,
+        "std_macro_f1": 0.0075,
+        "mean_accuracy": 0.884,
+        "mean_boundary_accuracy": 0.8858,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8798,
+          0.8789,
+          0.8983,
+          0.8798,
+          0.8798
+        ],
+        "seed_runs_acc": [
+          0.88,
+          0.88,
+          0.9,
+          0.88,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "581bff66ba325f6b18c1b3cbbf49cfecc8d5033095e798aad9d427c54cd17148",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "d1222fea799da9e481191d28edf88ddab57245fe0417e1a6e30531372c789ae0",
+            "macro_f1": 0.8789,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "fe3cf1ccab079d3f9673444a9581e9c8845e3a98b919e922dcf0a460b306b00e",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "69970d994ca45cb6697aca57ecb4345048b1b672a3747ba810227b47438cb438",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "c3053889c81e66465f9a1c7c78602c225f3a9db47c1fd365d46f41a4e6ed9794",
+            "macro_f1": 0.8798,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "500": {
+        "mean_macro_f1": 0.8904,
+        "std_macro_f1": 0.0166,
+        "mean_accuracy": 0.892,
+        "mean_boundary_accuracy": 0.8953,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8983,
+          0.9197,
+          0.8787,
+          0.8771,
+          0.8783
+        ],
+        "seed_runs_acc": [
+          0.9,
+          0.92,
+          0.88,
+          0.88,
+          0.88
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "cd31e41095eb8eeb90910f96004521ba0af050c0a8107acff45de718fb4b6fbd",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "774c977454cdd6338282447451bfaf19990565abc1b4493d742be0ee24f8e748",
+            "macro_f1": 0.9197,
+            "accuracy": 0.92,
+            "boundary_accuracy": 0.9286,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "bfbb4766e5c74ae6cf788d255e6d39f251e7035959a1bf044fccc73081c2c8bc",
+            "macro_f1": 0.8787,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "58892ee92d0e2317f3260d5b2c73c8b5f210da066fbdbd03f2fbddcb87fdbd1c",
+            "macro_f1": 0.8771,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "aa72c5f326b6ad913d18b9dac22c154b5d22ab2f16862af649f95a5b55ea2c1a",
+            "macro_f1": 0.8783,
+            "accuracy": 0.88,
+            "boundary_accuracy": 0.881,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      },
+      "1000": {
+        "mean_macro_f1": 0.8983,
+        "std_macro_f1": 0.0,
+        "mean_accuracy": 0.9,
+        "mean_boundary_accuracy": 0.9048,
+        "mean_hard_negative_accuracy": 0.875,
+        "seed_runs_f1": [
+          0.8983,
+          0.8983,
+          0.8983,
+          0.8983,
+          0.8983
+        ],
+        "seed_runs_acc": [
+          0.9,
+          0.9,
+          0.9,
+          0.9,
+          0.9
+        ],
+        "seed_details": [
+          {
+            "seed": 42,
+            "dataset_fingerprint": "1864bbb72d79d04f4a833b47ced90092a584e5b91f2855ff753d62898288682b",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 123,
+            "dataset_fingerprint": "6fd7a4284d2821d3f164bcf4ce1f9d51cc928012aff9ab8d5dff528dd9a69248",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 456,
+            "dataset_fingerprint": "12ab19d9f105ce54c5ac35c935b9379182cded7c9cc566e23a7ea2a3e56859c5",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 789,
+            "dataset_fingerprint": "f1368e30d0d73e3110f82cfe1dbde363474a9394f1ad9b56334fe3799d31d8c3",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          },
+          {
+            "seed": 999,
+            "dataset_fingerprint": "397f7b7b08272e225d002ba851bb8e2176a7a6688bacc07c8b008c692d82945a",
+            "macro_f1": 0.8983,
+            "accuracy": 0.9,
+            "boundary_accuracy": 0.9048,
+            "hard_negative_accuracy": 0.875
+          }
+        ]
+      }
+    }
+  },
+  "summary_matrix": {
+    "50": {
+      "arm_a_naive": 0.5872,
+      "arm_b_v1": 0.4832,
+      "arm_c_v2": 0.2177,
+      "arm_d_v21_curriculum": 0.6396,
+      "arm_e_v21_no_boundary": 0.6344,
+      "arm_f_v21_no_hard_neg": 0.7295,
+      "arm_g_v21_no_contrastive": 0.6396,
+      "arm_h_v21_randomized_order": 0.6396
+    },
+    "100": {
+      "arm_a_naive": 0.6722,
+      "arm_b_v1": 0.5814,
+      "arm_c_v2": 0.3373,
+      "arm_d_v21_curriculum": 0.7864,
+      "arm_e_v21_no_boundary": 0.7045,
+      "arm_f_v21_no_hard_neg": 0.8151,
+      "arm_g_v21_no_contrastive": 0.7864,
+      "arm_h_v21_randomized_order": 0.7864
+    },
+    "200": {
+      "arm_a_naive": 0.7253,
+      "arm_b_v1": 0.7214,
+      "arm_c_v2": 0.494,
+      "arm_d_v21_curriculum": 0.8588,
+      "arm_e_v21_no_boundary": 0.7173,
+      "arm_f_v21_no_hard_neg": 0.8467,
+      "arm_g_v21_no_contrastive": 0.8357,
+      "arm_h_v21_randomized_order": 0.8588
+    },
+    "300": {
+      "arm_a_naive": 0.7523,
+      "arm_b_v1": 0.7598,
+      "arm_c_v2": 0.5398,
+      "arm_d_v21_curriculum": 0.8833,
+      "arm_e_v21_no_boundary": 0.7522,
+      "arm_f_v21_no_hard_neg": 0.8798,
+      "arm_g_v21_no_contrastive": 0.8428,
+      "arm_h_v21_randomized_order": 0.8833
+    },
+    "500": {
+      "arm_a_naive": 0.7559,
+      "arm_b_v1": 0.7975,
+      "arm_c_v2": 0.6663,
+      "arm_d_v21_curriculum": 0.8904,
+      "arm_e_v21_no_boundary": 0.7483,
+      "arm_f_v21_no_hard_neg": 0.8824,
+      "arm_g_v21_no_contrastive": 0.8665,
+      "arm_h_v21_randomized_order": 0.8904
+    },
+    "1000": {
+      "arm_a_naive": 0.7558,
+      "arm_b_v1": 0.8108,
+      "arm_c_v2": 0.7278,
+      "arm_d_v21_curriculum": 0.8983,
+      "arm_e_v21_no_boundary": 0.7428,
+      "arm_f_v21_no_hard_neg": 0.8973,
+      "arm_g_v21_no_contrastive": 0.8789,
+      "arm_h_v21_randomized_order": 0.8983
+    }
+  },
+  "telemetry": {
+    "total_models_trained": 240,
+    "elapsed_seconds": 57.58
+  }
+}

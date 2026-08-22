@@ -1,22 +1,27 @@
 """
-Intentra V2 - Targeted Data Generator
-Synthesizes boundary examples, hard negatives, and contrastive pairs
-specifically conditioned on diagnosed classifier confusion pairs and weak classes.
+Intentra V2.1 - Curriculum-Aware Targeted Data Generator
+Synthesizes canonical anchors, controlled variations, boundary examples, and hard negatives
+conditioned on curriculum stage, diagnosed classifier confusion pairs, and weak classes.
 """
 
 import json
 from core.llm_client import call_llm, extract_json
 
 
+import numpy as np
+
+
 def generate_targeted_data(
     schema: dict,
     diagnostics: dict,
     count: int = 30,
-    target_language: str = "English"
+    target_language: str = "English",
+    curriculum_stage: int = 3,
+    archetype_mix: dict | None = None,
+    seed: int = 42
 ) -> list:
     """
-    Generate targeted synthetic examples designed to harden the classifier's
-    decision boundary around identified confusion pairs.
+    Generate targeted synthetic examples with full curriculum awareness and provenance.
     """
     primary_pair = diagnostics.get("primary_focus_pair")
     weak_class = diagnostics.get("primary_focus_weak_class")
@@ -29,41 +34,42 @@ def generate_targeted_data(
     cls_a = primary_pair[0] if primary_pair else (classes[0] if len(classes) > 0 else "Class A")
     cls_b = primary_pair[1] if primary_pair else (classes[1] if len(classes) > 1 else "Class B")
 
-    prompt = f"""You are Intentra V2's Targeted Hard-Example Generator.
-A downstream classifier was evaluated and FAILED specifically on the following decision boundary problem:
-"{target_problem}"
+    pair_list = [cls_a, cls_b] if primary_pair else None
+    reason_str = f"Curriculum Stage {curriculum_stage} targeting '{cls_a}' vs '{cls_b}'"
 
-Specifically, the classifier frequently confuses:
+    # Stage-aware instruction
+    if curriculum_stage == 1:
+        stage_desc = "Stage 1 Anchor Grounding: Generate 100% crystal-clear, unambiguous canonical examples."
+    elif curriculum_stage == 2:
+        stage_desc = "Stage 2 Controlled Variation: Generate diverse paraphrases and stylistic variants with clear labels."
+    elif curriculum_stage == 3:
+        stage_desc = f"Stage 3 Boundary Disambiguation: Generate boundary examples directly on the decision boundary between '{cls_a}' and '{cls_b}'."
+    else:
+        stage_desc = f"Stage 4 Contrastive Hardening: Generate subtle contrastive and hard-negative cases separating '{cls_a}' from '{cls_b}'."
+
+    prompt = f"""You are Intentra V2.1's Curriculum-Aware Targeted Generator.
+Current Optimization Stage: {stage_desc}
+Diagnostic Context: "{target_problem}"
+
+Target Classes:
 - Class A: "{cls_a}"
 - Class B: "{cls_b}"
 
-Your task is to generate EXACTLY {count} high-difficulty, targeted synthetic training examples in {target_language} that will teach the classifier how to correctly separate "{cls_a}" from "{cls_b}".
+Generate EXACTLY {count} synthetic training examples in {target_language}.
+VALID OUTPUT CLASSES: {json.dumps(classes)}
 
-Generate a balanced mix of:
-1. Boundary Cases (40%): Real-world customer/user statements that sit directly on the decision boundary between "{cls_a}" and "{cls_b}", where the correct label requires understanding subtle nuances.
-2. Hard Negatives (40%): Statements that contain keywords, phrasing, or vocabulary normally associated with "{cls_b}", but where the true underlying intent is "{cls_a}" (and vice versa).
-3. Contrastive Pairs (20%): Subtly different sentences where a slight modification in context flips the label from "{cls_a}" to "{cls_b}".
-
-VALID OUTPUT CLASSES MUST BE ONE OF: {json.dumps(classes)}
-
-OUTPUT FORMAT (JSON ARRAY ONLY, NO PREAMBLE, NO MARKDOWN OUTSIDE JSON):
+OUTPUT FORMAT (JSON ARRAY ONLY, NO PREAMBLE):
 [
   {{
-    "text": "Detailed realistic text statement",
+    "text": "Clear realistic statement",
     "label": "{cls_a}",
     "type": "boundary",
-    "difficulty_rationale": "Why this specifically disambiguates {cls_a} from {cls_b}"
-  }},
-  {{
-    "text": "Another detailed statement with misleading keywords",
-    "label": "{cls_b}",
-    "type": "hard_negative",
-    "difficulty_rationale": "Contains keywords from {cls_a} but true intent is {cls_b}"
+    "archetype": "boundary_case",
+    "difficulty": "MEDIUM_HARD",
+    "difficulty_rationale": "Clarifies boundary between {cls_a} and {cls_b}"
   }}
 ]
 """
-
-    reason_str = f"Targeted boundary hardening between '{cls_a}' and '{cls_b}'"
 
     try:
         response_text = call_llm(prompt, max_tokens=3000, temperature=0.75)
@@ -77,62 +83,95 @@ OUTPUT FORMAT (JSON ARRAY ONLY, NO PREAMBLE, NO MARKDOWN OUTSIDE JSON):
         for item in raw_examples:
             if isinstance(item, dict) and "text" in item and "label" in item:
                 lbl = item["label"].strip()
-                # Ensure label matches known classes if possible
                 matched_lbl = next((c for c in classes if c.lower() == lbl.lower()), lbl)
+                itype = item.get("type", "boundary" if curriculum_stage >= 3 else "canonical")
+                arch = item.get("archetype", "boundary_case" if itype == "boundary" else "hard_negative" if itype == "hard_negative" else "canonical_anchor")
+                
                 validated_examples.append({
                     "text": item["text"].strip(),
                     "label": matched_lbl,
-                    "type": item.get("type", "boundary"),
+                    "type": itype,
+                    "generation_stage": curriculum_stage,
+                    "archetype": arch,
+                    "target_class": matched_lbl,
+                    "confusion_pair": pair_list,
                     "difficulty_rationale": item.get("difficulty_rationale", reason_str),
                     "generation_reason": reason_str,
-                    "generated_by": "targeted_optimizer_v2"
+                    "difficulty": item.get("difficulty", "MEDIUM_HARD" if curriculum_stage == 3 else "HARD" if curriculum_stage == 4 else "EASY"),
+                    "source_error_ids": [],
+                    "generated_by": "targeted_curriculum_v21"
                 })
 
         if validated_examples:
             return validated_examples
 
     except Exception as e:
-        print(f"[Targeted Generator] LLM generation notice ({e}), using programmatic boundary synthesis fallback.")
+        print(f"[Targeted Generator] LLM notice ({e}), using curriculum fallback synthesis.")
 
-    # Programmatic Fallback for offline testing / LLM unavailable
-    return _generate_programmatic_fallback(cls_a, cls_b, count, reason_str)
+    # Programmatic Fallback for offline execution / test determinism
+    return _generate_programmatic_curriculum_fallback(cls_a, cls_b, count, reason_str, curriculum_stage, pair_list, seed=seed)
 
 
-def _generate_programmatic_fallback(cls_a: str, cls_b: str, count: int, reason: str) -> list:
-    """Generate high-quality heuristic boundary/hard-negative synthetic samples offline."""
-    fallback_templates = [
-        # Boundary for A
-        (f"I need to know the process for {cls_a}, but please clarify how it impacts my recent {cls_b}.", cls_a, "boundary"),
-        (f"Can I proceed with {cls_a} even if the system already shows a status for {cls_b}?", cls_a, "boundary"),
-        (f"Regarding my {cls_b} request earlier: I actually want to formally change it to a {cls_a}.", cls_a, "boundary"),
-        (f"What are the terms of {cls_a} if a {cls_b} has already been initiated?", cls_a, "boundary"),
-        # Hard Negative for A (Contains B keywords)
-        (f"Do not process this as a {cls_b}; I am explicitly demanding a {cls_a} instead.", cls_a, "hard_negative"),
-        (f"The representative told me to request {cls_b}, but that's wrong, my real issue is {cls_a}.", cls_a, "hard_negative"),
-        (f"I see the {cls_b} button on the portal, but I need assistance with {cls_a}.", cls_a, "hard_negative"),
-        # Boundary for B
-        (f"I was originally looking into {cls_a}, but right now my immediate priority is {cls_b}.", cls_b, "boundary"),
-        (f"If {cls_a} is not possible at this time, please proceed directly with {cls_b}.", cls_b, "boundary"),
-        (f"Does initiating a {cls_b} automatically prevent any future {cls_a}?", cls_b, "boundary"),
-        # Hard Negative for B (Contains A keywords)
-        (f"Although I previously inquired about {cls_a}, I want to confirm my request for {cls_b}.", cls_b, "hard_negative"),
-        (f"I don't need a {cls_a} anymore; just go ahead and finalize the {cls_b}.", cls_b, "hard_negative"),
-        (f"Forget the discussion on {cls_a}, I need {cls_b} immediately.", cls_b, "hard_negative")
-    ]
+def _generate_programmatic_curriculum_fallback(
+    cls_a: str,
+    cls_b: str,
+    count: int,
+    reason: str,
+    curriculum_stage: int,
+    pair_list: list | None,
+    seed: int = 42
+) -> list:
+    """Generate deterministic curriculum-structured examples offline with seed-dependent sampling."""
+    rng = np.random.default_rng(seed)
+    if curriculum_stage == 1:
+        templates = [
+            (f"This is explicitly and strictly a request regarding {cls_a}.", cls_a, "canonical", "canonical_anchor", "EASY"),
+            (f"I need direct assistance with {cls_a} for my account.", cls_a, "canonical", "canonical_anchor", "EASY"),
+            (f"Please help me complete my {cls_b} immediately.", cls_b, "canonical", "canonical_anchor", "EASY"),
+            (f"I am contacting support exclusively for {cls_b}.", cls_b, "canonical", "canonical_anchor", "EASY")
+        ]
+    elif curriculum_stage == 2:
+        templates = [
+            (f"Hello, I would like to inquire about the standard procedure for {cls_a}.", cls_a, "canonical", "controlled_variation", "EASY_MEDIUM"),
+            (f"Can someone from your support team guide me through {cls_a}?", cls_a, "canonical", "controlled_variation", "EASY_MEDIUM"),
+            (f"Good morning, please assist with finalizing my {cls_b}.", cls_b, "canonical", "controlled_variation", "EASY_MEDIUM"),
+            (f"Regarding my recent status: kindly process this as {cls_b}.", cls_b, "canonical", "controlled_variation", "EASY_MEDIUM")
+        ]
+    elif curriculum_stage == 3:
+        templates = [
+            (f"I need to know the process for {cls_a}, but please clarify how it impacts my recent {cls_b}.", cls_a, "boundary", "boundary_case", "MEDIUM_HARD"),
+            (f"Can I proceed with {cls_a} even if the system already shows a status for {cls_b}?", cls_a, "boundary", "boundary_case", "MEDIUM_HARD"),
+            (f"Regarding my {cls_b} request earlier: I actually want to formally change it to a {cls_a}.", cls_a, "boundary", "boundary_case", "MEDIUM_HARD"),
+            (f"I was originally looking into {cls_a}, but right now my immediate priority is {cls_b}.", cls_b, "boundary", "boundary_case", "MEDIUM_HARD"),
+            (f"If {cls_a} is not possible at this time, please proceed directly with {cls_b}.", cls_b, "boundary", "boundary_case", "MEDIUM_HARD")
+        ]
+    else:
+        templates = [
+            (f"Do not process this as a {cls_b}; I am explicitly demanding a {cls_a} instead.", cls_a, "hard_negative", "hard_negative", "HARD"),
+            (f"The portal showed options for {cls_b}, but my true requirement is {cls_a}.", cls_a, "hard_negative", "hard_negative", "HARD"),
+            (f"Although I previously discussed {cls_a}, finalize my {cls_b} right now.", cls_b, "hard_negative", "hard_negative", "HARD"),
+            (f"Forget any prior mention of {cls_a}; this is strictly a {cls_b}.", cls_b, "hard_negative", "hard_negative", "HARD")
+        ]
 
     results = []
-    idx = 0
-    while len(results) < count:
-        tmpl_text, tmpl_lbl, tmpl_type = fallback_templates[idx % len(fallback_templates)]
-        variant_text = f"{tmpl_text} (Case #{len(results) + 1})"
+    for _ in range(count):
+        idx = int(rng.integers(0, len(templates)))
+        tmpl_text, tmpl_lbl, tmpl_type, tmpl_arch, tmpl_diff = templates[idx]
+        ref_id = int(rng.integers(1000, 9999))
+        variant_text = f"{tmpl_text} (Case #{ref_id})"
         results.append({
             "text": variant_text,
             "label": tmpl_lbl,
             "type": tmpl_type,
-            "difficulty_rationale": f"Programmatic {tmpl_type} template disambiguating {cls_a} vs {cls_b}",
+            "generation_stage": curriculum_stage,
+            "archetype": tmpl_arch,
+            "target_class": tmpl_lbl,
+            "confusion_pair": pair_list,
+            "difficulty_rationale": f"Curriculum Stage {curriculum_stage} {tmpl_arch} between {cls_a} and {cls_b}",
             "generation_reason": reason,
-            "generated_by": "targeted_optimizer_v2"
+            "difficulty": tmpl_diff,
+            "source_error_ids": [],
+            "generated_by": "targeted_curriculum_v21"
         })
-        idx += 1
 
     return results

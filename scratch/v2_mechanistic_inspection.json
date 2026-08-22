@@ -1,0 +1,86 @@
+{
+  "naive": {
+    "dataset_name": "Naive Synthetic",
+    "total_examples": 100,
+    "canonical_anchor_rate": 1.0,
+    "boundary_example_rate": 0.0,
+    "hard_negative_rate": 0.0,
+    "adversarial_contrastive_rate": 0.0,
+    "conflicting_keyword_rate": 0.0,
+    "class_balance_std": 0.0,
+    "avg_intra_class_jaccard": 0.473,
+    "avg_inter_class_jaccard": 0.0851,
+    "lexical_separability_ratio": 5.5575,
+    "type_counts": {
+      "canonical": 100
+    },
+    "label_counts": {
+      "refund_request": 20,
+      "cancellation_request": 20,
+      "billing_inquiry": 20,
+      "technical_support": 20,
+      "general_feedback": 20
+    }
+  },
+  "intentra_v1": {
+    "dataset_name": "Intentra V1",
+    "total_examples": 100,
+    "canonical_anchor_rate": 0.5,
+    "boundary_example_rate": 0.2,
+    "hard_negative_rate": 0.0,
+    "adversarial_contrastive_rate": 0.3,
+    "conflicting_keyword_rate": 0.2,
+    "class_balance_std": 0.0,
+    "avg_intra_class_jaccard": 0.4493,
+    "avg_inter_class_jaccard": 0.1059,
+    "lexical_separability_ratio": 4.2415,
+    "type_counts": {
+      "canonical": 50,
+      "boundary": 20,
+      "adversarial": 30
+    },
+    "label_counts": {
+      "refund_request": 20,
+      "cancellation_request": 20,
+      "billing_inquiry": 20,
+      "technical_support": 20,
+      "general_feedback": 20
+    }
+  },
+  "intentra_v2": {
+    "dataset_name": "Intentra V2 Closed-Loop",
+    "total_examples": 100,
+    "canonical_anchor_rate": 0.3,
+    "boundary_example_rate": 0.34,
+    "hard_negative_rate": 0.18,
+    "adversarial_contrastive_rate": 0.18,
+    "conflicting_keyword_rate": 0.3,
+    "class_balance_std": 9.8793,
+    "avg_intra_class_jaccard": 0.2457,
+    "avg_inter_class_jaccard": 0.095,
+    "lexical_separability_ratio": 2.5878,
+    "type_counts": {
+      "canonical": 30,
+      "boundary": 34,
+      "adversarial": 18,
+      "hard_negative": 18
+    },
+    "label_counts": {
+      "refund_request": 12,
+      "cancellation_request": 30,
+      "billing_inquiry": 34,
+      "technical_support": 12,
+      "general_feedback": 12
+    }
+  },
+  "hypothesis_evaluation": {
+    "hypothesis": "Premature Boundary Hardening (excessive boundary/contrastive examples before canonical anchors are established)",
+    "supported": true,
+    "evidence": {
+      "canonical_rate_comparison": "Naive: 1.0 vs V2: 0.3",
+      "conflicting_keyword_rate_comparison": "Naive: 0.0 vs V2: 0.3",
+      "lexical_separability_ratio_comparison": "Naive: 5.5575 vs V2: 2.5878"
+    },
+    "conclusion": "SUPPORTED"
+  }
+}

@@ -1150,7 +1150,14 @@ def api_get_dataset_version(id: str, db: Session = Depends(get_db)):
 
 @app.get("/api/benchmarks")
 def api_get_benchmarks():
-    """Run/fetch data efficiency benchmark comparing Naive vs V1 vs V2."""
+    """Run/fetch data efficiency benchmark comparing Naive vs V1 vs V2 vs V2.1."""
+    v21_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "scratch", "v21_raw_results.json")
+    if os.path.exists(v21_path):
+        try:
+            with open(v21_path, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
     from core.benchmark_suite import execute_full_benchmark_audit
     res = execute_full_benchmark_audit(sample_sizes=[50, 100, 200, 300])
     return res

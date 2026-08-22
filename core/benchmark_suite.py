@@ -252,16 +252,26 @@ V1_BOUNDARY_SEEDS = {
 }
 
 
+import hashlib
+
+def compute_dataset_fingerprint(dataset: list) -> str:
+    """Compute deterministic SHA-256 fingerprint of dataset content."""
+    canonical_repr = "\n".join(f"{ex.get('label', '')}:::{ex.get('text', '')}" for ex in dataset)
+    return hashlib.sha256(canonical_repr.encode("utf-8")).hexdigest()
+
+
 def build_naive_dataset(count: int, seed: int = 42) -> list:
-    """Build high-diversity naive dataset (unambiguous, keyword-heavy)."""
-    np.random.seed(seed)
+    """Build high-diversity naive dataset with genuine seed-dependent template selection."""
+    rng = np.random.default_rng(seed)
     classes = list(NAIVE_SEEDS.keys())
     data = []
     for i in range(count):
         cls = classes[i % len(classes)]
         pool = NAIVE_SEEDS[cls]
-        tmpl = pool[i % len(pool)]
-        formatted = tmpl.format(i + 1) if "{}" in tmpl else f"{tmpl} (Ref #{i+1})"
+        idx = int(rng.integers(0, len(pool)))
+        tmpl = pool[idx]
+        ref_id = int(rng.integers(1000, 9999))
+        formatted = tmpl.format(ref_id) if "{}" in tmpl else f"{tmpl} (Ref #{ref_id})"
         data.append({
             "text": formatted,
             "label": cls,
@@ -271,29 +281,36 @@ def build_naive_dataset(count: int, seed: int = 42) -> list:
 
 
 def build_v1_dataset(count: int, seed: int = 42) -> list:
-    """Build Intentra V1 dataset (50% canonical, 20% boundary, 30% adversarial)."""
-    np.random.seed(seed)
+    """Build Intentra V1 dataset (50% canonical, 20% boundary, 30% adversarial) with genuine seed-dependent selection."""
+    rng = np.random.default_rng(seed)
     classes = list(NAIVE_SEEDS.keys())
     data = []
     for i in range(count):
         cls = classes[i % len(classes)]
         mode_idx = i % 10
+        ref_id = int(rng.integers(1000, 9999))
         if mode_idx < 5:
             # 50% Canonical
             pool = NAIVE_SEEDS[cls]
-            tmpl = pool[i % len(pool)]
-            text = tmpl.format(i + 1) if "{}" in tmpl else f"{tmpl} (Ref #{i+1})"
+            tmpl = pool[int(rng.integers(0, len(pool)))]
+            text = tmpl.format(ref_id) if "{}" in tmpl else f"{tmpl} (Ref #{ref_id})"
             item_type = "canonical"
         elif mode_idx < 7:
             # 20% Boundary
             pool = V1_BOUNDARY_SEEDS[cls]
-            tmpl = pool[i % len(pool)]
-            text = tmpl.format(i + 1) if "{}" in tmpl else f"{tmpl} (Ref #{i+1})"
+            tmpl = pool[int(rng.integers(0, len(pool)))]
+            text = tmpl.format(ref_id) if "{}" in tmpl else f"{tmpl} (Ref #{ref_id})"
             item_type = "boundary"
         else:
             # 30% Adversarial (Contains competing keywords)
-            other_cls = classes[(i + 1) % len(classes)]
-            text = f"Do not mistake this for a {other_cls.replace('_', ' ')}; this is explicitly a formal {cls.replace('_', ' ')} for ticket #{i+1}."
+            other_classes = [c for c in classes if c != cls]
+            other_cls = other_classes[int(rng.integers(0, len(other_classes)))]
+            templates = [
+                f"Do not mistake this for a {other_cls.replace('_', ' ')}; this is explicitly a formal {cls.replace('_', ' ')} for ticket #{ref_id}.",
+                f"Although this ticket #{ref_id} mentions {other_cls.replace('_', ' ')}, my primary issue is strictly {cls.replace('_', ' ')}.",
+                f"Please disregard any prior inquiry about {other_cls.replace('_', ' ')}; I urgently require assistance with {cls.replace('_', ' ')} (ID #{ref_id})."
+            ]
+            text = templates[int(rng.integers(0, len(templates)))]
             item_type = "adversarial"
 
         data.append({
@@ -328,7 +345,7 @@ def build_v2_closed_loop_dataset(count: int, val_set: list, seed: int = 42, fram
 
     # 4. Generate targeted data specifically for diagnosed confusion pair
     schema = get_demo_customer_support_schema()
-    raw_targeted = generate_targeted_data(schema, diag, count=targeted_budget)
+    raw_targeted = generate_targeted_data(schema, diag, count=targeted_budget, seed=seed)
 
     # 5. Filter & validate
     filtered = filter_candidate_examples(raw_targeted, base_data, schema)
@@ -343,6 +360,7 @@ def build_v2_closed_loop_dataset(count: int, val_set: list, seed: int = 42, fram
 
     return {
         "dataset": final_v2_data,
+        "fingerprint": compute_dataset_fingerprint(final_v2_data),
         "diagnostics": diag,
         "telemetry": {
             "base_examples": len(base_data),
